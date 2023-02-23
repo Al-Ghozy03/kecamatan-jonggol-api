@@ -2,7 +2,6 @@ const penduduk = require("../database/penduduk");
 const Client = require("./client");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
-const { check } = require("express-validator");
 require("dotenv").config();
 
 class Penduduk extends Client {
@@ -119,6 +118,51 @@ class Penduduk extends Client {
       });
     } catch (er) {
       console.log(er);
+      return super.response(res, 500, er);
+    }
+  }
+
+  async detail(req, res) {
+    try {
+      const { id } = req.params;
+      const data = await penduduk.findById(id, {
+        nama: "$nama",
+        rt: "$rt",
+        rw: "$rw",
+        dusun: "$dusun",
+        nomor_kk: "$nomor_kk",
+        nik: "$nik",
+        jenis_kelamin: "$jenis_kelamin",
+        tempat_lahir: "$tempat_lahir",
+        tanggal_lahir: "$tanggal_lahir",
+        agama: "$agama",
+        pendidikan_dalam_kk: "$pendidikan_dalam_kk",
+        pendidikan_sedang_ditempuh: "$pendidikan_sedang_ditempuh",
+        pekerjaan: "$pekerjaan",
+        kawin: "$kawin",
+        hubungan_keluarga: "$hubungan_keluarga",
+        kewarganegaraan: "$kewarganegaraan",
+        nama_ayah: "$nama_ayah",
+        nama_ibu: "$nama_ibu",
+        golongan_darah: "$golongan_darah",
+        akta_lahir: "$akta_lahir",
+        nomor_dokumen_paspor: "$nomor_dokumen_paspor",
+        tanggal_akhir_passport: "$tanggal_akhir_passport",
+        nomor_dokumen_KITAS: "$nomor_dokumen_KITAS",
+        nik_ayah: "$nik_ayah",
+        nik_ibu: "$nik_ibu",
+        nomor_akta_perkawinan: "$nomor_akta_perkawinan",
+        tanggal_perkawinan: "$tanggal_perkawinan",
+        nomor_akta_cerai: "$nomor_akta_cerai",
+        tanggal_perceraian: "$tanggal_perceraian",
+        cacat: "$cacat",
+        cara_kb: "$cara_kb",
+        hamil: "$hamil",
+        alamat_sekarang: "$alamat_sekarang",
+      });
+      if (!data) return super.response(res, 404, "penduduk tidak ditemukan");
+      return super.response(res, 200, null, data);
+    } catch (er) {
       return super.response(res, 500, er);
     }
   }
