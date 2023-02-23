@@ -1,16 +1,7 @@
 const dbconnection = require("./db_connection");
 
-const admin = dbconnection.model("admin", {
-  email: {
-    type: String,
-    default: null,
-    unique: true,
-  },
-  password: {
-    type: String,
-    default: null,
-  },
-  id_role: {
+const agama = dbconnection.model("agama", {
+  nama: {
     type: String,
     default: null,
   },
@@ -24,4 +15,4 @@ const admin = dbconnection.model("admin", {
   },
 });
 
-module.exports = admin;
+module.exports = agama;

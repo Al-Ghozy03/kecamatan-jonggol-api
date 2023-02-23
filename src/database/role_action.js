@@ -1,17 +1,13 @@
+const { ObjectId } = require("mongodb");
 const dbconnection = require("./db_connection");
 
-const admin = dbconnection.model("admin", {
-  email: {
-    type: String,
-    default: null,
-    unique: true,
-  },
-  password: {
-    type: String,
-    default: null,
-  },
+const role_action = dbconnection.model("role_action", {
   id_role: {
-    type: String,
+    type: ObjectId,
+    default: null,
+  },
+  id_action: {
+    type: ObjectId,
     default: null,
   },
   createdAt: {
@@ -24,4 +20,4 @@ const admin = dbconnection.model("admin", {
   },
 });
 
-module.exports = admin;
+module.exports = role_action;

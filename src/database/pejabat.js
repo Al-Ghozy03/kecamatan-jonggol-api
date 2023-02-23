@@ -1,17 +1,13 @@
+const { ObjectId } = require("mongodb");
 const dbconnection = require("./db_connection");
 
-const admin = dbconnection.model("admin", {
-  email: {
-    type: String,
-    default: null,
-    unique: true,
-  },
-  password: {
-    type: String,
+const pejabat = dbconnection.model("pejabat", {
+  id_jabatan: {
+    type: ObjectId,
     default: null,
   },
-  id_role: {
-    type: String,
+  id_admin: {
+    type: ObjectId,
     default: null,
   },
   createdAt: {
@@ -24,4 +20,4 @@ const admin = dbconnection.model("admin", {
   },
 });
 
-module.exports = admin;
+module.exports = pejabat;

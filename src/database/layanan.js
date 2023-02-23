@@ -1,16 +1,19 @@
 const dbconnection = require("./db_connection");
 
-const admin = dbconnection.model("admin", {
-  email: {
-    type: String,
-    default: null,
-    unique: true,
-  },
-  password: {
+const layanan = dbconnection.model("layanan", {
+  nama: {
     type: String,
     default: null,
   },
-  id_role: {
+  syarat: {
+    type: String,
+    default: null,
+  },
+  template: {
+    type: String,
+    default: null,
+  },
+  id_template: {
     type: String,
     default: null,
   },
@@ -24,4 +27,4 @@ const admin = dbconnection.model("admin", {
   },
 });
 
-module.exports = admin;
+module.exports = layanan;
