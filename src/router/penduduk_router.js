@@ -7,5 +7,6 @@ router.post("/register", penduduk_controller.register);
 router.post("/login", penduduk_controller.login);
 router.use(jwtMiddleware);
 router.put("/edit/:id", penduduk_controller.edit);
+router.get("/", penduduk_controller.get);
 
 module.exports = { penduduk_router: router };

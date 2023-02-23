@@ -58,6 +58,70 @@ class Penduduk extends Client {
       return super.response(res, 200, er);
     }
   }
+  async get(req, res) {
+    try {
+      const { key, page, limit } = req.query;
+      const size = (parseInt(page) - 1) * parseInt(limit);
+      const data = await penduduk
+        .find(
+          {
+            ...(key !== undefined && {
+              nama: { $regex: key, $options: "i" },
+            }),
+          },
+          {
+            nama: "$nama",
+            rt: "$rt",
+            rw: "$rw",
+            dusun: "$dusun",
+            nomor_kk: "$nomor_kk",
+            nik: "$nik",
+            jenis_kelamin: "$jenis_kelamin",
+            tempat_lahir: "$tempat_lahir",
+            tanggal_lahir: "$tanggal_lahir",
+            agama: "$agama",
+            pendidikan_dalam_kk: "$pendidikan_dalam_kk",
+            pendidikan_sedang_ditempuh: "$pendidikan_sedang_ditempuh",
+            pekerjaan: "$pekerjaan",
+            kawin: "$kawin",
+            hubungan_keluarga: "$hubungan_keluarga",
+            kewarganegaraan: "$kewarganegaraan",
+            nama_ayah: "$nama_ayah",
+            nama_ibu: "$nama_ibu",
+            golongan_darah: "$golongan_darah",
+            akta_lahir: "$akta_lahir",
+            nomor_dokumen_paspor: "$nomor_dokumen_paspor",
+            tanggal_akhir_passport: "$tanggal_akhir_passport",
+            nomor_dokumen_KITAS: "$nomor_dokumen_KITAS",
+            nik_ayah: "$nik_ayah",
+            nik_ibu: "$nik_ibu",
+            nomor_akta_perkawinan: "$nomor_akta_perkawinan",
+            tanggal_perkawinan: "$tanggal_perkawinan",
+            nomor_akta_cerai: "$nomor_akta_cerai",
+            tanggal_perceraian: "$tanggal_perceraian",
+            cacat: "$cacat",
+            cara_kb: "$cara_kb",
+            hamil: "$hamil",
+            alamat_sekarang: "$alamat_sekarang",
+          }
+        )
+        .skip(size)
+        .limit(parseInt(limit));
+      const count = await penduduk.countDocuments({
+        ...(key !== undefined && {
+          nama: { $regex: key, $options: "i" },
+        }),
+      });
+      return super.response(res, 200, null, data, {
+        total: count,
+        total_page: Math.ceil(count / parseInt(limit)),
+        active_page: parseInt(page),
+      });
+    } catch (er) {
+      console.log(er);
+      return super.response(res, 500, er);
+    }
+  }
 }
 
 module.exports = new Penduduk();
