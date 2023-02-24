@@ -2,6 +2,7 @@ const admin = require("../database/admin");
 const Client = require("./client");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
+const { default: jwtDecode } = require("jwt-decode");
 require("dotenv").config();
 
 class Admin extends Client {
@@ -42,6 +43,75 @@ class Admin extends Client {
       return super.response(res, 200);
     } catch (er) {
       return super.response(res, 500, er);
+    }
+  }
+  async get(req, res) {
+    try {
+      const { page, limit, key } = req.query;
+      const size = (parseInt(page) - 1) * parseInt(limit);
+      const checkAdmin = jwtDecode(req.headers.authorization);
+      if (checkAdmin.role !== "admin")
+        return super.response(res, 401, "invalid token");
+      const pipeline = [
+        { $match: { email: { $regex: new RegExp(key, "i") } } },
+        {
+          $lookup: {
+            from: "roles",
+            localField: "id_role",
+            foreignField: "_id",
+            as: "role",
+            pipeline: [
+              {
+                $project: {
+                  role_name: 1,
+                },
+              },
+            ],
+          },
+        },
+        { $unwind: "$role" },
+        {
+          $project: {
+            email: 1,
+            role: 1,
+          },
+        },
+      ];
+      if (page !== undefined && limit !== undefined) {
+        pipeline.push(
+          {
+            $skip: size,
+          },
+          {
+            $limit: parseInt(limit),
+          }
+        );
+      }
+      const data = await admin.aggregate(pipeline);
+      const count = await admin.countDocuments({
+        ...(key !== undefined && {
+          email: { $regex: key, $options: "i" },
+        }),
+      });
+      return super.responseWithPagination(
+        res,
+        200,
+        null,
+        data,
+        count,
+        Math.ceil(count / parseInt(limit)),
+        parseInt(parseInt(page))
+      );
+    } catch (er) {
+      console.log(er);
+      return res.status(500).json({
+        code: 500,
+        message: er,
+        total: 0,
+        total_page: 0,
+        active_page: 0,
+        data: null,
+      });
     }
   }
 }

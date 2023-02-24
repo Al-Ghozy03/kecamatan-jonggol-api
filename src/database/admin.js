@@ -1,3 +1,4 @@
+const { ObjectId } = require("mongodb");
 const dbconnection = require("./db_connection");
 
 const admin = dbconnection.model("admin", {
@@ -12,7 +13,7 @@ const admin = dbconnection.model("admin", {
   },
   // role.id
   id_role: {
-    type: String,
+    type: ObjectId,
     default: null,
   },
   createdAt: {
