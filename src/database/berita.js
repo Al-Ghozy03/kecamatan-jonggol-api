@@ -2,6 +2,7 @@ const { ObjectId } = require("mongodb");
 const dbconnection = require("./db_connection");
 
 const berita = dbconnection.model("berita", {
+  // admin.id
   id_admin: {
     type: ObjectId,
     default: null,

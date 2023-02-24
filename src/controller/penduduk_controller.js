@@ -111,11 +111,15 @@ class Penduduk extends Client {
           nama: { $regex: key, $options: "i" },
         }),
       });
-      return super.response(res, 200, null, data, {
-        total: count,
-        total_page: Math.ceil(count / parseInt(limit)),
-        active_page: parseInt(page),
-      });
+      return super.responseWithPagination(
+        res,
+        200,
+        null,
+        data,
+        count,
+        Math.ceil(count / parseInt(limit)),
+        parseInt(parseInt(page))
+      );
     } catch (er) {
       console.log(er);
       return super.response(res, 500, er);

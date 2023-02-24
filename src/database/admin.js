@@ -10,6 +10,7 @@ const admin = dbconnection.model("admin", {
     type: String,
     default: null,
   },
+  // role.id
   id_role: {
     type: String,
     default: null,

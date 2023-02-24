@@ -5,10 +5,6 @@ const role = dbconnection.model("role", {
     type: String,
     default: null,
   },
-  id_role: {
-    type: String,
-    default: null,
-  },
   createdAt: {
     type: Date,
     default: new Date(),

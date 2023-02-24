@@ -1,9 +1,11 @@
 const dbconnection = require("./db_connection");
 
-const jabatan = dbconnection.model("jabatan", {
-  nama: {
+const action = dbconnection.model("action", {
+  action_name: {
     type: String,
-    default: null,
+  },
+  description: {
+    type: String,
   },
   createdAt: {
     type: Date,
@@ -15,4 +17,4 @@ const jabatan = dbconnection.model("jabatan", {
   },
 });
 
-module.exports = jabatan;
+module.exports = action

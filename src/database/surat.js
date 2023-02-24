@@ -14,6 +14,7 @@ const surat = dbconnection.model("surat", {
     type: Number,
     default: 0,
   },
+  // role.id
   kepala_desa: {
     type: ObjectId,
     default: null,
