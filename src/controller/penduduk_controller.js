@@ -64,64 +64,95 @@ class Penduduk extends Client {
     try {
       const { key, page, limit } = req.query;
       const size = (parseInt(page) - 1) * parseInt(limit);
-      const data = await penduduk
-        .find(
-          {
+      const pagination = [];
+      const pipeline = [
+        {
+          $match: {
             ...(key !== undefined && {
-              nama: { $regex: key, $options: "i" },
+              $or: [
+                { nama: { $regex: key, $options: "i" } },
+                { nik: { $regex: key, $options: "i" } },
+              ],
             }),
           },
+        },
+        {
+          $lookup: {
+            from: "desas",
+            localField: "id_desa",
+            foreignField: "_id",
+            as: "desa_asal",
+            pipeline: [{ $project: { nama_desa: 1, kepala_desa: 1 } }],
+          },
+        },
+        { $unwind: "$desa_asal" },
+        {
+          $project: {
+            nama: 1,
+            rt: 1,
+            rw: 1,
+            dusun: 1,
+            nomor_kk: 1,
+            nik: 1,
+            jenis_kelamin: 1,
+            tempat_lahir: 1,
+            tanggal_lahir: 1,
+            agama: 1,
+            pendidikan_dalam_kk: 1,
+            pendidikan_sedang_ditempuh: 1,
+            pekerjaan: 1,
+            kawin: 1,
+            hubungan_keluarga: 1,
+            kewarganegaraan: 1,
+            nama_ayah: 1,
+            nama_ibu: 1,
+            golongan_darah: 1,
+            akta_lahir: 1,
+            nomor_dokumen_paspor: 1,
+            tanggal_akhir_passport: 1,
+            nomor_dokumen_KITAS: 1,
+            nik_ayah: 1,
+            nik_ibu: 1,
+            nomor_akta_perkawinan: 1,
+            tanggal_perkawinan: 1,
+            nomor_akta_cerai: 1,
+            tanggal_perceraian: 1,
+            cacat: 1,
+            cara_kb: 1,
+            hamil: 1,
+            alamat_sekarang: 1,
+            desa_asal: 1,
+          },
+        },
+        {
+          $facet: {
+            data: pagination,
+            total: [{ $count: "count" }],
+          },
+        },
+      ];
+      if (page !== undefined && limit !== undefined) {
+        pagination.push(
           {
-            nama: "$nama",
-            rt: "$rt",
-            rw: "$rw",
-            dusun: "$dusun",
-            nomor_kk: "$nomor_kk",
-            nik: "$nik",
-            jenis_kelamin: "$jenis_kelamin",
-            tempat_lahir: "$tempat_lahir",
-            tanggal_lahir: "$tanggal_lahir",
-            agama: "$agama",
-            pendidikan_dalam_kk: "$pendidikan_dalam_kk",
-            pendidikan_sedang_ditempuh: "$pendidikan_sedang_ditempuh",
-            pekerjaan: "$pekerjaan",
-            kawin: "$kawin",
-            hubungan_keluarga: "$hubungan_keluarga",
-            kewarganegaraan: "$kewarganegaraan",
-            nama_ayah: "$nama_ayah",
-            nama_ibu: "$nama_ibu",
-            golongan_darah: "$golongan_darah",
-            akta_lahir: "$akta_lahir",
-            nomor_dokumen_paspor: "$nomor_dokumen_paspor",
-            tanggal_akhir_passport: "$tanggal_akhir_passport",
-            nomor_dokumen_KITAS: "$nomor_dokumen_KITAS",
-            nik_ayah: "$nik_ayah",
-            nik_ibu: "$nik_ibu",
-            nomor_akta_perkawinan: "$nomor_akta_perkawinan",
-            tanggal_perkawinan: "$tanggal_perkawinan",
-            nomor_akta_cerai: "$nomor_akta_cerai",
-            tanggal_perceraian: "$tanggal_perceraian",
-            cacat: "$cacat",
-            cara_kb: "$cara_kb",
-            hamil: "$hamil",
-            alamat_sekarang: "$alamat_sekarang",
-            id_desa: "$id_desa",
+            $skip: size,
+          },
+          {
+            $limit: parseInt(limit),
           }
-        )
-        .skip(size)
-        .limit(parseInt(limit));
-      const count = await penduduk.countDocuments({
-        ...(key !== undefined && {
-          nama: { $regex: key, $options: "i" },
-        }),
-      });
+        );
+      }
+      const data = await penduduk.aggregate(pipeline);
       return super.responseWithPagination(
         res,
         200,
         null,
-        data,
-        count,
-        Math.ceil(count / parseInt(limit)),
+        data[0].data,
+        data[0].total.length === 0 ? 0 : data[0].total[0].count,
+        Math.ceil(
+          data[0].total.length === 0
+            ? 0
+            : data[0].total[0].count / parseInt(limit)
+        ),
         parseInt(parseInt(page))
       );
     } catch (er) {
