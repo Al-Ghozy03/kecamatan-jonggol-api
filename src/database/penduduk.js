@@ -1,3 +1,4 @@
+const { ObjectId } = require("mongodb");
 const dbconnection = require("./db_connection");
 
 const penduduk = dbconnection.model("penduduk", {
@@ -155,6 +156,10 @@ const penduduk = dbconnection.model("penduduk", {
   },
   alamat_sekarang: {
     type: String,
+    default: null,
+  },
+  id_desa: {
+    type: ObjectId,
     default: null,
   },
   createdAt: {

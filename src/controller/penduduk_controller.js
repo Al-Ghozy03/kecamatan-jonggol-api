@@ -2,6 +2,7 @@ const penduduk = require("../database/penduduk");
 const Client = require("./client");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
+const desa = require("../database/desa");
 require("dotenv").config();
 
 class Penduduk extends Client {
@@ -10,6 +11,8 @@ class Penduduk extends Client {
       const body = req.body;
       const check = await penduduk.findOne({ nik: body.nik });
       if (check) return super.response(res, 404, "nik sudah terdaftar");
+      const checkDesa = await desa.findById(body.id_desa);
+      if (!checkDesa) return super.response(res, 400, "desa tidak ditemukan");
       body.password = await bcrypt.hashSync(body.password, 12);
       const data = await penduduk.create(body);
       const token = jwt.sign(
@@ -102,6 +105,7 @@ class Penduduk extends Client {
             cara_kb: "$cara_kb",
             hamil: "$hamil",
             alamat_sekarang: "$alamat_sekarang",
+            id_desa: "$id_desa",
           }
         )
         .skip(size)
@@ -162,6 +166,7 @@ class Penduduk extends Client {
         cacat: "$cacat",
         cara_kb: "$cara_kb",
         hamil: "$hamil",
+        alamat_sekarang: "$alamat_sekarang",
         alamat_sekarang: "$alamat_sekarang",
       });
       if (!data) return super.response(res, 404, "penduduk tidak ditemukan");

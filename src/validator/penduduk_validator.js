@@ -1,4 +1,6 @@
 const { check } = require("express-validator");
+const penduduk = require("../database/penduduk");
+
 const pendudukRegisterValidator = [
   check("nama").isLength({ min: 1 }).withMessage("nama tidak boleh kosong"),
   check("nik")
@@ -9,8 +11,13 @@ const pendudukRegisterValidator = [
   check("password")
     .isLength({ min: 6 })
     .withMessage("password minimal 6 karakter"),
+  check("id_desa")
+    .isMongoId()
+    .withMessage("pastikan id_desa sesuai dengan mongo id")
+    .isLength({ min: 1 })
+    .withMessage("desa tidak boleh kosong"),
 ];
-const pendudukValidator = [
+const pendudukEditValidator = [
   check("alamat").isLength({ min: 1 }).withMessage("alamat tidak boleh kosong"),
   check("rt").isLength({ min: 1 }).withMessage("RT tidak boleh kosong"),
   check("rw").isLength({ min: 1 }).withMessage("RW tidak boleh kosong"),
@@ -93,4 +100,7 @@ const pendudukValidator = [
     .withMessage("alamat sekarang tidak boleh kosong"),
 ];
 
-module.exports = { pendudukValidator, pendudukRegisterValidator };
+module.exports = {
+  pendudukEditValidator,
+  pendudukRegisterValidator,
+};

@@ -3,22 +3,26 @@ const { jwtMiddleware } = require("../middleware/jwt");
 const validatorMiddleware = require("../middleware/validator_middleware");
 const {
   pendudukRegisterValidator,
-  pendudukValidator,
+  pendudukEditValidator,
+  pendudukLoginValidator,
 } = require("../validator/penduduk_validator");
 
 const router = require("express")();
 
+router.post(
+  "/login",
+  penduduk_controller.login
+);
 router.post(
   "/register",
   pendudukRegisterValidator,
   validatorMiddleware,
   penduduk_controller.register
 );
-router.post("/login", penduduk_controller.login);
 router.use(jwtMiddleware);
 router.put(
   "/edit/:id",
-  pendudukValidator,
+  pendudukEditValidator,
   validatorMiddleware,
   penduduk_controller.edit
 );

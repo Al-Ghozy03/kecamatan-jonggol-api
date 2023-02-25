@@ -20,6 +20,9 @@ class Client {
     if (code === 200) {
       message = "success";
     }
+    if (!total) total = 0;
+    if (!total_page) total_page = 0;
+    if (!active_page) active_page = 0;
     return res.status(code).json({
       message,
       total,

@@ -14,7 +14,7 @@ const surat = dbconnection.model("surat", {
     type: Number,
     default: 0,
   },
-  // role.id
+  // desa.id
   kepala_desa: {
     type: ObjectId,
     default: null,
@@ -26,6 +26,11 @@ const surat = dbconnection.model("surat", {
   tahun: {
     type: String,
     default: null,
+  },
+  status: {
+    type: String,
+    enum: ["verifikasi", "diterima", "ditolak"],
+    default: "verifikasi",
   },
   createdAt: {
     type: Date,
