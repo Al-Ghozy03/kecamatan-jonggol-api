@@ -50,33 +50,53 @@ class Admin extends Client {
       const checkAdmin = jwtDecode(req.headers.authorization);
       if (checkAdmin.role !== "admin")
         return super.response(res, 401, "invalid token");
+      const pagination = [];
       const pipeline = [
         { $match: { email: { $regex: new RegExp(key, "i") } } },
         {
           $lookup: {
-            from: "roles",
+            from: "role_actions",
             localField: "id_role",
-            foreignField: "_id",
-            as: "role",
+            foreignField: "id_role",
+            as: "role_action",
             pipeline: [
+              { $project: { id_role: 1, id_action: 1 } },
               {
-                $project: {
-                  role_name: 1,
+                $lookup: {
+                  from: "actions",
+                  localField: "id_action",
+                  foreignField: "_id",
+                  as: "action",
+                  pipeline: [{ $project: { action_name: 1, description: 1 } }],
+                },
+              },
+              {
+                $lookup: {
+                  from: "roles",
+                  localField: "id_role",
+                  foreignField: "_id",
+                  as: "roles",
+                  pipeline: [{ $project: { role_name: 1 } }],
                 },
               },
             ],
           },
         },
-        { $unwind: "$role" },
         {
           $project: {
             email: 1,
-            role: 1,
+            role_action: 1,
+          },
+        },
+        {
+          $facet: {
+            data: pagination,
+            total: [{ $count: "count" }],
           },
         },
       ];
       if (page !== undefined && limit !== undefined) {
-        pipeline.push(
+        pagination.push(
           {
             $skip: size,
           },
@@ -95,9 +115,13 @@ class Admin extends Client {
         res,
         200,
         null,
-        data,
-        count,
-        Math.ceil(count / parseInt(limit)),
+        data[0].data,
+        data[0].total.length === 0 ? 0 : data[0].total[0].count,
+        Math.ceil(
+          data[0].total.length === 0
+            ? 0
+            : data[0].total[0].count / parseInt(limit)
+        ),
         parseInt(parseInt(page))
       );
     } catch (er) {
