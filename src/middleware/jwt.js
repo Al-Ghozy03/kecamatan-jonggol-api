@@ -48,7 +48,7 @@ async function authme(req, res) {
     jwt.verify(token, process.env.JWT_SIGN, async (err, decode) => {
       if (err) {
         return res.status(401).json({
-          message: "fail",
+          message: "failed",
           data: err,
         });
       } else {
