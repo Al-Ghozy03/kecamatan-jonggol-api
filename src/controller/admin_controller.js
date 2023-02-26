@@ -70,15 +70,17 @@ class Admin extends Client {
                   pipeline: [{ $project: { action_name: 1, description: 1 } }],
                 },
               },
+              {$unwind:"$action"},
               {
                 $lookup: {
                   from: "roles",
                   localField: "id_role",
                   foreignField: "_id",
-                  as: "roles",
+                  as: "role",
                   pipeline: [{ $project: { role_name: 1 } }],
                 },
               },
+              {$unwind:"$role"},
             ],
           },
         },
@@ -106,11 +108,6 @@ class Admin extends Client {
         );
       }
       const data = await admin.aggregate(pipeline);
-      const count = await admin.countDocuments({
-        ...(key !== undefined && {
-          email: { $regex: key, $options: "i" },
-        }),
-      });
       return super.responseWithPagination(
         res,
         200,
