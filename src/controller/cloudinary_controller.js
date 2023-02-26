@@ -10,30 +10,44 @@ cloudinary.config({
 });
 
 class Cloudinary {
-  async post(file, folder) {
-    const { secure_url, public_id } = await cloudinary.uploader.upload(file, {
-      folder: `/siforsa/${folder}`,
-      use_filename: true,
+  post(file, folder) {
+    return new Promise((resolve, reject) => {
+      cloudinary.uploader
+        .upload(file, {
+          folder: `/siforsa/${folder}`,
+          use_filename: true,
+        })
+        .then((res) => {
+          resolve(res);
+        })
+        .catch((er) => {
+          reject(er);
+        });
     });
-    return { secure_url, public_id };
   }
-  async postDocument(file, folder) {
-    const { secure_url, public_id } = await cloudinary.uploader.upload(
-      file.path,
-      {
-        folder: `/siforsa/${folder}`,
-        public_id: `${file.originalname.substring(
-          0,
-          file.originalname.length - 5
-        )}-${crypto.randomInt(0, 100000)}`,
-        resource_type: "raw",
-        format: "docx",
-      }
-    );
-    return { secure_url, public_id };
+  postDocument(file, folder) {
+    return new Promise((resolve, reject) => {
+      cloudinary.uploader
+        .upload(file.path, {
+          folder: `/siforsa/${folder}`,
+          public_id: `${file.originalname.substring(
+            0,
+            file.originalname.length - 5
+          )}-${crypto.randomInt(0, 100000)}`,
+          resource_type: "raw",
+          format: "docx",
+        })
+        .then((res) => resolve(res))
+        .catch((er) => reject(er));
+    });
   }
   async delete(id) {
-    await cloudinary.uploader.destroy(id);
+    return new Promise((resolve, reject) => {
+      cloudinary.uploader
+        .destroy(id)
+        .then((res) => resolve(res))
+        .catch((er) => reject(er));
+    });
   }
 }
 

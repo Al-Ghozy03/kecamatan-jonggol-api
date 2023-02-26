@@ -5,7 +5,6 @@ const surat = require("../database/surat");
 const Client = require("./client");
 const crypto = require("crypto");
 const desa = require("../database/desa");
-const { ObjectId } = require("mongodb");
 const { default: mongoose } = require("mongoose");
 
 class Surat extends Client {
@@ -187,9 +186,7 @@ class Surat extends Client {
             localField: "id_penduduk",
             foreignField: "_id",
             as: "pembuat",
-            pipeline: [
-              { $project: { nama: 1, nik: 1, id_desa: 1 } },
-            ],
+            pipeline: [{ $project: { nama: 1, nik: 1, id_desa: 1 } }],
           },
         },
         { $unwind: "$pembuat" },
@@ -200,9 +197,7 @@ class Surat extends Client {
             localField: "id_layanan",
             foreignField: "_id",
             as: "layanan",
-            pipeline: [
-              { $project: { nama: 1, syarat: 1, template: 1 } },
-            ],
+            pipeline: [{ $project: { nama: 1, syarat: 1, template: 1 } }],
           },
         },
         { $unwind: "$layanan" },
@@ -229,7 +224,8 @@ class Surat extends Client {
           },
         },
       ]);
-      return super.response(res, 200, null, data);
+      if (!data[0]) return super.response(res, 404, "data tidak ditemukan");
+      return super.response(res, 200, null, data[0]);
     } catch (er) {
       console.log(er);
       return super.response(res, 500, er);

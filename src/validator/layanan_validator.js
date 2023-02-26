@@ -6,12 +6,6 @@ const layananCreateValidator = [
   check("template").custom((val, { req }) => {
     if (req.file === undefined)
       return Promise.reject("template tidak boleh kosong");
-    if (
-      req.file.mimetype !==
-      "application/vnd.openxmlformats-officedocument.wordprocessingml.document"
-    )
-      return Promise.reject("file harus berekstensi .docx");
-    return true;
   }),
 ];
 const layananEditValidator = [
