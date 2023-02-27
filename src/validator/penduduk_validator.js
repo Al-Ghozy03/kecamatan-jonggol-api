@@ -1,5 +1,4 @@
 const { check } = require("express-validator");
-const penduduk = require("../database/penduduk");
 
 const pendudukRegisterValidator = [
   check("nama").isLength({ min: 1 }).withMessage("nama tidak boleh kosong"),
@@ -22,7 +21,7 @@ const pendudukEditValidator = [
   check("rt").isLength({ min: 1 }).withMessage("RT tidak boleh kosong"),
   check("rw").isLength({ min: 1 }).withMessage("RW tidak boleh kosong"),
   check("dusun").isLength({ min: 1 }).withMessage("dusun tidak boleh kosong"),
-  check("nomor_kk")
+  check("nomor_kk").isNumeric().withMessage("nomor KK harus angka")
     .isLength({ min: 1 })
     .withMessage("nomor kk tidak boleh kosong"),
   check("jenis_kelamin")
@@ -74,10 +73,12 @@ const pendudukEditValidator = [
     .withMessage("nomor dokumen KITAS tidak boleh kosong"),
   check("nik_ayah")
     .isLength({ min: 1 })
-    .withMessage("NIK ayah tidak boleh kosong"),
+    .withMessage("NIK ayah tidak boleh kosong")
+    .isNumeric()
+    .withMessage("NIK ayah harus angka"),
   check("nik_ibu")
     .isLength({ min: 1 })
-    .withMessage("NIK ibu tidak boleh kosong"),
+    .withMessage("NIK ibu tidak boleh kosong").isNumeric().withMessage("NIK ibu harus angka"),
   check("nomor_akta_perkawinan")
     .isLength({ min: 1 })
     .withMessage("nomor akta perkawinan tidak boleh kosong"),
@@ -85,6 +86,8 @@ const pendudukEditValidator = [
     .isLength({ min: 1 })
     .withMessage("tanggal perkawinan tidak boleh kosong"),
   check("nomor_akta_cerai")
+    .isNumeric()
+    .withMessage("nomor akta cerai harus angka")
     .isLength({ min: 1 })
     .withMessage("nomor akta cerai tidak boleh kosong"),
   check("tanggal_cerai")
