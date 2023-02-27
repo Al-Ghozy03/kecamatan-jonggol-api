@@ -123,7 +123,7 @@ class RoleAction extends Client {
       );
     } catch (er) {
       console.log(er);
-      return super.response(res, 500, er);
+      return super.responseWithPagination(res, 500, er);
     }
   }
 }

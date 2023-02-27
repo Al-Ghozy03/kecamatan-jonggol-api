@@ -106,14 +106,7 @@ class Layanan extends Client {
       );
     } catch (er) {
       console.log(er);
-      return res.status(500).json({
-        code: 500,
-        message: er,
-        total: 0,
-        total_page: 0,
-        active_page: 0,
-        data: null,
-      });
+      super.responseWithPagination(res, 500, er);
     }
   }
 }

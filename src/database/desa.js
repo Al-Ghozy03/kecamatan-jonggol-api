@@ -19,4 +19,4 @@ const desa = dbconnection.model("desa", {
   },
 });
 
-module.exports = desa
+module.exports = desa;

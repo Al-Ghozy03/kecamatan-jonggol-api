@@ -1,5 +1,6 @@
 const { ObjectId } = require("mongodb");
 const dbconnection = require("./db_connection");
+const bcrypt = require("bcrypt");
 
 const admin = dbconnection.model("admin", {
   email: {
@@ -25,5 +26,11 @@ const admin = dbconnection.model("admin", {
     default: new Date(),
   },
 });
+
+// admin.create({
+//   email: "jonggoladmin@gmail.com",
+//   password: bcrypt.hashSync("adminjonggol123", 10),
+//   id_role: "63fc1cc3119a179746bc9fc0",
+// }).then(res=>console.log("berhasil")).catch(er=>console.log(er));
 
 module.exports = admin;

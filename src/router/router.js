@@ -6,6 +6,10 @@ const { berita_router } = require("./berita_router");
 const { layanan_router } = require("./layanan_router");
 const { penduduk_router } = require("./penduduk_router");
 const { surat_router } = require("./surat_router");
+const { kewarganegaraan_router } = require("./kewarganegaraan_router");
+const { hub_keluarga_router } = require("./hub_keluarga_router");
+const { desa_router } = require("./desa_router");
+const { agama_router } = require("./agama_router");
 const router = require("express")();
 
 router.use("/penduduk", penduduk_router);
@@ -16,6 +20,10 @@ router.use("/berita", berita_router);
 router.use("/action", action_router);
 router.use("/role", role_router);
 router.use("/role-action", role_action_router);
+router.use("/kewarganegaraan", kewarganegaraan_router);
+router.use("/hub-keluarga", hub_keluarga_router);
+router.use("/desa", desa_router);
+router.use("/agama", agama_router);
 router.all("*", (req, res) =>
   res.status(404).json({ code: 404, message: "route not found" })
 );
