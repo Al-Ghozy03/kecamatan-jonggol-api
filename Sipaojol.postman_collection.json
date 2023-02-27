@@ -1,0 +1,1550 @@
+{
+	"info": {
+		"_postman_id": "81830fa1-58fa-445c-8db8-5756e679b586",
+		"name": "Sipaojol",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "17264363"
+	},
+	"item": [
+		{
+			"name": "penduduk",
+			"item": [
+				{
+					"name": "list",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "{{token}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/penduduk?page=1&limit=2&key=2189232890887658",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"penduduk"
+							],
+							"query": [
+								{
+									"key": "page",
+									"value": "1"
+								},
+								{
+									"key": "limit",
+									"value": "2"
+								},
+								{
+									"key": "key",
+									"value": "2189232890887658"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "register",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"nama\":\"Muhammad Faiz Al Ghozi\",\r\n    \"nik\":\"2119232821887658\",\r\n    \"password\":\"030303\",\r\n    \"id_desa\":\"63fc1a3c349cc45db83b6c67\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/penduduk/register",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"penduduk",
+								"register"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "login",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"nik\":\"2119232821887658\",\r\n    \"password\":\"030303\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/penduduk/login",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"penduduk",
+								"login"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "edit",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "{{token}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"nama\":\"Muhammad Faiz Al Ghozi\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/penduduk/edit/63f704b4d9999d6fd283ec02",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"penduduk",
+								"edit",
+								"63f704b4d9999d6fd283ec02"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "detail",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "{{token}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/penduduk/63f704b4d9999d6fd283ec02",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"penduduk",
+								"63f704b4d9999d6fd283ec02"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "admin",
+			"item": [
+				{
+					"name": "register",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"email\":\"arap@gmail.com\",\r\n    \"password\":\"030303\",\r\n    \"id_role\":\"63f8136a11e475c3ee6c1287\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/admin/register",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"admin",
+								"register"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "login",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"email\":\"jonggoladmin@gmail.com\",\r\n    \"password\":\"adminjonggol123\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/admin/login",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"admin",
+								"login"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "list",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "{{token_admin}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/admin?page=1&limit=1",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"admin"
+							],
+							"query": [
+								{
+									"key": "page",
+									"value": "1"
+								},
+								{
+									"key": "limit",
+									"value": "1"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "layanan",
+			"item": [
+				{
+					"name": "create",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "{{token_admin}}",
+								"type": "text"
+							},
+							{
+								"warning": "This is a duplicate header and will be overridden by the Content-Type header generated by Postman.",
+								"key": "Content-Type",
+								"value": "multipart/form-data",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "nama",
+									"value": "surat izin menjual pulau",
+									"type": "text"
+								},
+								{
+									"key": "syarat",
+									"value": "[\"punya 10 juta power di rise of kingdom\",\"ganteng\",\"kaya\"]",
+									"type": "text"
+								},
+								{
+									"key": "template",
+									"type": "file",
+									"src": "/D:/contoh template surat.docx"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{base_url}}/layanan/create",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"layanan",
+								"create"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "edit",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "{{token_admin}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "nama",
+									"value": "surat menyurat",
+									"type": "text",
+									"disabled": true
+								},
+								{
+									"key": "template",
+									"type": "file",
+									"src": "/D:/contoh template surat.docx"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{base_url}}/layanan/edit/63f80fb434ceda6163246287",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"layanan",
+								"edit",
+								"63f80fb434ceda6163246287"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "delete",
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "{{token_admin}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/layanan/delete/63f817b2d1091df799ad42f8",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"layanan",
+								"delete",
+								"63f817b2d1091df799ad42f8"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "list",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "{{token}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/layanan",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"layanan"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "surat",
+			"item": [
+				{
+					"name": "create",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjYzZjk5MjQ2YzE5YmI5MWFlNTk2OTBmOSIsInJvbGUiOiJwZW5kdWR1ayIsImlhdCI6MTY3NzMwMDI5NCwiZXhwIjoxNjc3Mzg2Njk0fQ.vu6Gs3dBn11horym2564ko2LYTnwvuxGstHxGW7JVmY",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"id_layanan\":\"63f9893ebbcb57231695a7f5\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/surat/create",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"surat",
+								"create"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "list",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "{{token}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/surat",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"surat"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "edit",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "{{token_admin}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"status\":\"ditolak\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/surat/edit/63f98644c31a6c39e4308c45",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"surat",
+								"edit",
+								"63f98644c31a6c39e4308c45"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "detail",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "{{token}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/surat/63f98644c31a6c39e4308c45",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"surat",
+								"63f98644c31a6c39e4308c45"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "berita",
+			"item": [
+				{
+					"name": "create",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "multipart/form-data",
+								"type": "text"
+							},
+							{
+								"key": "Authorization",
+								"value": "{{token_admin}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "judul",
+									"value": "Juna dikejar pak jul",
+									"type": "text"
+								},
+								{
+									"key": "konten",
+									"value": "sepertinya tidak perlu dijelaskan karena kalian juga pasti tahu",
+									"type": "text"
+								},
+								{
+									"key": "thumbnail",
+									"type": "file",
+									"src": "/D:/DLL/FOTO HP/IMG-20201128-WA0033.jpg"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{base_url}}/berita/create",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"berita",
+								"create"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "delete",
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "{{token_admin}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/berita/delete/63facdcb3e2123b6063e3ba8",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"berita",
+								"delete",
+								"63facdcb3e2123b6063e3ba8"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "edit",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "{{token_admin}}",
+								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"value": "multipart/form-data",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "judul",
+									"value": "arjuna, sini kamu",
+									"type": "text"
+								},
+								{
+									"key": "thumbnail",
+									"type": "file",
+									"src": "/C:/Users/LENOVO/OneDrive/Gambar/Screenshots/Screenshot_20230220_093728.png"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{base_url}}/berita/edit/63faca3c10482afd94589b5d",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"berita",
+								"edit",
+								"63faca3c10482afd94589b5d"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "list",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "{{token}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/berita",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"berita"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "detail",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "{{token}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/berita/63faca3c10482afd94589b5d",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"berita",
+								"63faca3c10482afd94589b5d"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "action",
+			"item": [
+				{
+					"name": "create",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "{{token_admin}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"action_name\":\"DELETE NEWS\",\r\n    \"description\":\"memiliki akses untuk menghapus berita\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/action/create",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"action",
+								"create"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "edit",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "{{token_admin}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"action_name\":\"ADD ADMIN\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/action/edit/63f814a0a67481d9498ad8e2",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"action",
+								"edit",
+								"63f814a0a67481d9498ad8e2"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "delete",
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "{{token_admin}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/action/delete/63f814a0a67481d9498ad8e2",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"action",
+								"delete",
+								"63f814a0a67481d9498ad8e2"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "list",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "{{token_admin}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/action?page=1&limit=2",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"action"
+							],
+							"query": [
+								{
+									"key": "page",
+									"value": "1"
+								},
+								{
+									"key": "limit",
+									"value": "2"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "role",
+			"item": [
+				{
+					"name": "create",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "{{token_admin}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"role_name\":\"Bagian naroh naroh\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/role/create",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"role",
+								"create"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "edit",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "{{token_admin}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"action_name\":\"ADD ADMIN\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/role/edit/63f814a0a67481d9498ad8e2",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"role",
+								"edit",
+								"63f814a0a67481d9498ad8e2"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "delete",
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "{{token_admin}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/role/delete/63f814a0a67481d9498ad8e2",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"role",
+								"delete",
+								"63f814a0a67481d9498ad8e2"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "list",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "{{token_admin}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/role?page=1&limit=2",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"role"
+							],
+							"query": [
+								{
+									"key": "page",
+									"value": "1"
+								},
+								{
+									"key": "limit",
+									"value": "2"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "role action",
+			"item": [
+				{
+					"name": "create",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "{{token_admin}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"id_role\": \"63f8136a11e475c3ee6c1287\",\r\n    \"id_action\": \"63fb299720d75245d02556b1\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/role-action/create",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"role-action",
+								"create"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "edit",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "{{token_admin}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"action_name\":\"ADD ADMIN\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/role/role-action/63f814a0a67481d9498ad8e2",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"role",
+								"role-action",
+								"63f814a0a67481d9498ad8e2"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "delete",
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "{{token_admin}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/role-action/delete/63f814a0a67481d9498ad8e2",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"role-action",
+								"delete",
+								"63f814a0a67481d9498ad8e2"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "list",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "{{token_admin}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/role-action",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"role-action"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "kewarganegaraan",
+			"item": [
+				{
+					"name": "create",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "{{token_admin}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"nama\":\"WNA\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/kewarganegaraan/create",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"kewarganegaraan",
+								"create"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "edit",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "{{token_admin}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"nama\":\"WNI\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/kewarganegaraan/edit/63fc211fc275d917252b7d65",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"kewarganegaraan",
+								"edit",
+								"63fc211fc275d917252b7d65"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "delete",
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "{{token_admin}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/kewarganegaraan/delete/63fc2122c275d917252b7d68",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"kewarganegaraan",
+								"delete",
+								"63fc2122c275d917252b7d68"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "list",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "{{token}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/kewarganegaraan",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"kewarganegaraan"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "hub keluarga",
+			"item": [
+				{
+					"name": "create",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "{{token_admin}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"nama\":\"Anak\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/hub-keluarga/create",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"hub-keluarga",
+								"create"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "edit",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "{{token_admin}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"nama\":\"WNI\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/hub-keluarga/edit/63fc211fc275d917252b7d65",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"hub-keluarga",
+								"edit",
+								"63fc211fc275d917252b7d65"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "delete",
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "{{token_admin}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/hub-keluarga/delete/63fc2122c275d917252b7d68",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"hub-keluarga",
+								"delete",
+								"63fc2122c275d917252b7d68"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "list",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "{{token}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/hub-keluarga",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"hub-keluarga"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "desa",
+			"item": [
+				{
+					"name": "create",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "{{token_admin}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"nama\":\"Anak\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/desa/create",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"desa",
+								"create"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "edit",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "{{token_admin}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"nama\":\"WNI\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/desa/edit/63fc211fc275d917252b7d65",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"desa",
+								"edit",
+								"63fc211fc275d917252b7d65"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "delete",
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "{{token_admin}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/desa/delete/63fc2122c275d917252b7d68",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"desa",
+								"delete",
+								"63fc2122c275d917252b7d68"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "list",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "{{token}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/desa",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"desa"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "agama",
+			"item": [
+				{
+					"name": "create",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "{{token_admin}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"nama\":\"Konghucu\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/agama/create",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"agama",
+								"create"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "edit",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "{{token_admin}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"nama\":\"Islam\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/agama/edit/63fc4d719b8dbc9fad5563b7",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"agama",
+								"edit",
+								"63fc4d719b8dbc9fad5563b7"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "delete",
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "{{token_admin}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/agama/delete/63fc4d889b8dbc9fad5563c6",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"agama",
+								"delete",
+								"63fc4d889b8dbc9fad5563c6"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "list",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "{{token}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/agama",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"agama"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		}
+	]
+}
