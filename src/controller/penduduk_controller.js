@@ -62,6 +62,9 @@ class Penduduk extends Client {
   }
   async get(req, res) {
     try {
+      const checkAdmin = jwtDecode(req.headers.authorization);
+      if (checkAdmin.role !== "admin")
+        return super.response(res, 401, "invalid token");
       const { key, page, limit } = req.query;
       const size = (parseInt(page) - 1) * parseInt(limit);
       const pagination = [];
@@ -160,7 +163,6 @@ class Penduduk extends Client {
       return super.responseWithPagination(res, 500, er);
     }
   }
-
   async detail(req, res) {
     try {
       const { id } = req.params;
@@ -203,6 +205,15 @@ class Penduduk extends Client {
       if (!data) return super.response(res, 404, "penduduk tidak ditemukan");
       return super.response(res, 200, null, data);
     } catch (er) {
+      return super.response(res, 500, er);
+    }
+  }
+  async totalPenduduk(req, res) {
+    try {
+      const total = await penduduk.countDocuments();
+      return super.response(res, 200, null, { total });
+    } catch (er) {
+      console.log(er);
       return super.response(res, 500, er);
     }
   }
