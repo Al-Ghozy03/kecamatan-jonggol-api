@@ -6,6 +6,10 @@ const penduduk = dbconnection.model("penduduk", {
     type: String,
     default: null,
   },
+  no_hp: {
+    type: Number,
+    default: null,
+  },
   alamat: {
     type: String,
     default: null,

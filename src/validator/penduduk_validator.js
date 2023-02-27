@@ -17,6 +17,7 @@ const pendudukRegisterValidator = [
     .withMessage("desa tidak boleh kosong"),
 ];
 const pendudukEditValidator = [
+  check("no_hp").isLength({ min: 1 }).withMessage("no hp tidak boleh kosong").isNumeric().withMessage("no hp harus angka"),
   check("alamat").isLength({ min: 1 }).withMessage("alamat tidak boleh kosong"),
   check("rt").isLength({ min: 1 }).withMessage("RT tidak boleh kosong"),
   check("rw").isLength({ min: 1 }).withMessage("RW tidak boleh kosong"),
