@@ -52,7 +52,7 @@ const penduduk = dbconnection.model("penduduk", {
     default: null,
   },
   agama: {
-    type: String,
+    type: ObjectId,
     default: null,
   },
   pendidikan_dalam_kk: {
@@ -72,11 +72,11 @@ const penduduk = dbconnection.model("penduduk", {
     default: null,
   },
   hubungan_keluarga: {
-    type: String,
+    type: ObjectId,
     default: null,
   },
   kewarganegaraan: {
-    type: String,
+    type: ObjectId,
     default: null,
   },
   nama_ayah: {

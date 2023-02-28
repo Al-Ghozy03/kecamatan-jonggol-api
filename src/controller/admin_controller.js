@@ -88,6 +88,7 @@ class Admin extends Client {
         {
           $project: {
             email: 1,
+            nama: 1,
             role_action: 1,
           },
         },
