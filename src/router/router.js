@@ -10,8 +10,10 @@ const { kewarganegaraan_router } = require("./kewarganegaraan_router");
 const { hub_keluarga_router } = require("./hub_keluarga_router");
 const { desa_router } = require("./desa_router");
 const { agama_router } = require("./agama_router");
+const { auth_router } = require("./auth_router");
 const router = require("express")();
 
+router.use("/auth", auth_router);
 router.use("/penduduk", penduduk_router);
 router.use("/admin", admin_router);
 router.use("/layanan", layanan_router);

@@ -3,6 +3,7 @@ const Client = require("./client");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 const desa = require("../database/desa");
+const { default: jwtDecode } = require("jwt-decode");
 require("dotenv").config();
 
 class Penduduk extends Client {
@@ -22,7 +23,7 @@ class Penduduk extends Client {
           expiresIn: "1d",
         }
       );
-      res.cookie("token", token, { httpOnly: true });
+      res.cookie("token", token, { httpOnly: true, maxAge: 60 * 60 * 24 * 7 });
       return super.response(res, 200);
     } catch (er) {
       console.log(er);
@@ -41,7 +42,7 @@ class Penduduk extends Client {
         process.env.JWT_SIGN,
         { expiresIn: "1d" }
       );
-      res.cookie("token", token, { httpOnly: true });
+      res.cookie("token", token, { httpOnly: true, maxAge: 60 * 60 * 24 * 7 });
       return super.response(res, 200);
     } catch (er) {
       console.log(er);
@@ -62,7 +63,7 @@ class Penduduk extends Client {
   }
   async get(req, res) {
     try {
-      const checkAdmin = jwtDecode(req.headers.authorization);
+      const checkAdmin = jwtDecode(req.cookies.token);
       if (checkAdmin.role !== "admin")
         return super.response(res, 401, "invalid token");
       const { key, page, limit } = req.query;

@@ -7,7 +7,7 @@ class Layanan extends Client {
   async create(req, res) {
     try {
       const body = req.body;
-      const checkAdmin = jwtDecode(req.headers.authorization);
+      const checkAdmin = jwtDecode(req.cookies.token);
       if (checkAdmin.role !== "admin")
         return super.response(res, 401, "invalid token");
       if (
@@ -28,8 +28,7 @@ class Layanan extends Client {
   }
   async edit(req, res) {
     try {
-      const checkAdmin = jwtDecode(req.headers.authorization);
-      if (checkAdmin.role !== "admin")
+      if (checkAdmin.role !== "admin" )
         return super.response(res, 401, "invalid token");
       const body = req.body;
       const { id } = req.params;

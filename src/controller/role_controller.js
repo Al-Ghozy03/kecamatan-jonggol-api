@@ -5,7 +5,7 @@ const Client = require("./client");
 class Role extends Client {
   async create(req, res) {
     try {
-      const checkAdmin = jwtDecode(req.headers.authorization);
+     const checkAdmin = jwtDecode(req.cookies.token);
       if (checkAdmin.role !== "admin")
         return super.response(res, 401, "invalid token");
       const body = req.body;
@@ -18,7 +18,7 @@ class Role extends Client {
   }
   async edit(req, res) {
     try {
-      const checkAdmin = jwtDecode(req.headers.authorization);
+     const checkAdmin = jwtDecode(req.cookies.token);
       if (checkAdmin.role !== "admin")
         return super.response(res, 401, "invalid token");
       const { id } = req.params;
@@ -32,7 +32,7 @@ class Role extends Client {
   }
   async delete(req, res) {
     try {
-      const checkAdmin = jwtDecode(req.headers.authorization);
+     const checkAdmin = jwtDecode(req.cookies.token);
       if (checkAdmin.role !== "admin")
         return super.response(res, 401, "invalid token");
       const { id } = req.params;
@@ -48,7 +48,7 @@ class Role extends Client {
     try {
       const { page, limit, key } = req.query;
       const size = (parseInt(page) - 1) * parseInt(limit);
-      const checkAdmin = jwtDecode(req.headers.authorization);
+     const checkAdmin = jwtDecode(req.cookies.token);
       if (checkAdmin.role !== "admin")
         return super.response(res, 401, "invalid token");
       const pagination = [];

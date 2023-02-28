@@ -7,9 +7,9 @@ const Client = require("./client");
 class RoleAction extends Client {
   async create(req, res) {
     try {
-      const checkAdmin = jwtDecode(req.headers.authorization);
       const { id_role, id_action } = req.body;
-      if (checkAdmin.role !== "admin")
+     const checkAdmin = jwtDecode(req.cookies.token);
+      if (checkAdmin.role !== "admin" )
         return super.response(res, 401, "invalid token");
       const checkRole = await role.findById(id_role);
       const checkAction = await action.findById(id_action);
@@ -29,8 +29,8 @@ class RoleAction extends Client {
   }
   async edit(req, res) {
     try {
-      const checkAdmin = jwtDecode(req.headers.authorization);
-      if (checkAdmin.role !== "admin")
+     const checkAdmin = jwtDecode(req.cookies.token);
+      if (checkAdmin.role !== "admin" )
         return super.response(res, 401, "invalid token");
       const { id } = req.params;
       const data = await role_action.findByIdAndUpdate(id, { $set: req.body });
@@ -43,8 +43,8 @@ class RoleAction extends Client {
   }
   async delete(req, res) {
     try {
-      const checkAdmin = jwtDecode(req.headers.authorization);
-      if (checkAdmin.role !== "admin")
+     const checkAdmin = jwtDecode(req.cookies.token);
+      if (checkAdmin.role !== "admin" )
         return super.response(res, 401, "invalid token");
       const { id } = req.params;
       const data = await role_action.findByIdAndDelete(id);
@@ -59,8 +59,8 @@ class RoleAction extends Client {
     try {
       const { page, limit } = req.query;
       const size = (parseInt(page) - 1) * parseInt(limit);
-      const checkAdmin = jwtDecode(req.headers.authorization);
-      if (checkAdmin.role !== "admin")
+     const checkAdmin = jwtDecode(req.cookies.token);
+      if (checkAdmin.role !== "admin" )
         return super.response(res, 401, "invalid token");
       const pagination = [];
       const pipeline = [

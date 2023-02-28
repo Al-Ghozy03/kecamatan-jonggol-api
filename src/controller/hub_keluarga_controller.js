@@ -5,7 +5,7 @@ const Client = require("./client");
 class HubKeluarga extends Client {
   async create(req, res) {
     try {
-      const checkAdmin = jwtDecode(req.headers.authorization);
+     const checkAdmin = jwtDecode(req.cookies.token);
       if (checkAdmin.role !== "admin")
         return super.response(res, 401, "invalid token");
       const body = req.body;
@@ -18,7 +18,7 @@ class HubKeluarga extends Client {
   }
   async edit(req, res) {
     try {
-      const checkAdmin = jwtDecode(req.headers.authorization);
+     const checkAdmin = jwtDecode(req.cookies.token);
       if (checkAdmin.role !== "admin")
         return super.response(res, 401, "invalid token");
       const { id } = req.params;
@@ -32,7 +32,7 @@ class HubKeluarga extends Client {
   }
   async delete(req, res) {
     try {
-      const checkAdmin = jwtDecode(req.headers.authorization);
+     const checkAdmin = jwtDecode(req.cookies.token);
       if (checkAdmin.role !== "admin")
         return super.response(res, 401, "invalid token");
       const { id } = req.params;

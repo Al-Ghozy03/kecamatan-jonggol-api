@@ -8,6 +8,10 @@ const admin = dbconnection.model("admin", {
     default: null,
     unique: true,
   },
+  nama: {
+    type: String,
+    default: null,
+  },
   password: {
     type: String,
     default: null,

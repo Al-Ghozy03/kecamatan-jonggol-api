@@ -1,15 +1,19 @@
 const jwt = require("jsonwebtoken");
+const { default: jwtDecode } = require("jwt-decode");
 const admin = require("../database/admin");
 const penduduk = require("../database/penduduk");
 
 async function jwtMiddleware(req, res, next) {
-  const { authorization } = req.headers;
-  if (authorization == undefined)
+  const { token } = req.cookies;
+  if (token === undefined)
     return res.status(401).json({ code: 401, message: "token is required" });
-  const token = authorization.split(" ")[1];
 
   jwt.verify(token, process.env.JWT_SIGN, async (err, decode) => {
     if (err) {
+      if (err.message === "jwt expired")
+        return res.status(401).json({
+          message: "token expired",
+        });
       return res.status(401).json({
         message: "invalid token",
       });
@@ -41,32 +45,23 @@ async function jwtMiddleware(req, res, next) {
   });
 }
 async function authme(req, res) {
-  try {
-    const { authorization } = req.headers;
-    const token = authorization.split(" ")[1];
-
-    jwt.verify(token, process.env.JWT_SIGN, async (err, decode) => {
-      if (err) {
-        return res.status(401).json({
-          message: "failed",
-          data: err,
-        });
-      } else {
-        const newToken = jwt.sign(
-          { email: decode?.email },
-          process.env.JWT_SIGN
-        );
-        res.json({
-          data: newToken,
-        });
-      }
+  const { token } = req.cookies;
+  if (token === undefined)
+    return res.status(401).json({ message: "token is required", token: null });
+  jwt.verify(token, process.env.JWT_SIGN, (er, decode) => {
+    if (er?.message === "invalid signature") {
+      return res.status(401).json({ message: "invalid token", token: null });
+    }
+    const { id, role } = jwtDecode(token);
+    const newToken = jwt.sign({ id, role }, process.env.JWT_SIGN, {
+      expiresIn: "1d",
     });
-  } catch (er) {
-    console.log(er);
-    return res.status(401).json({
-      message: er,
+    res.cookie("token", newToken, {
+      httpOnly: true,
+      maxAge: 60 * 60 * 24 * 7,
     });
-  }
+    return res.status(200).json({ message: "success", token: newToken });
+  });
 }
 
 module.exports = { jwtMiddleware, authme };
