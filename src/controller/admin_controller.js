@@ -12,17 +12,17 @@ class Admin extends Client {
       const check = await admin.findOne({ email: body.email });
       if (check) return super.response(res, 400, "email sudah terdaftar");
       body.password = await bcrypt.hashSync(body.password, 10);
-      const data = await admin.create(body);
-      const token = jwt.sign(
-        { id: data._id, role: "admin" },
-        process.env.JWT_SIGN,
-        { expiresIn: "1d" }
-      );
-      res.cookie("token", token, { httpOnly: true, maxAge: 60 * 60 * 24 * 7 });
-      return super.responseWithToken(res, 200, null, token);
+      await admin.create(body);
+      // const token = jwt.sign(
+      //   { id: data._id, role: "admin" },
+      //   process.env.JWT_SIGN,
+      //   { expiresIn: "1d" }
+      // );
+      // res.cookie("token", token, { httpOnly: true, maxAge: 60 * 60 * 24 * 7 });
+      return super.response(res, 200, null);
     } catch (er) {
       console.log(er);
-      return super.responseWithToken(res, 500, er);
+      return super.response(res, 500, er);
     }
   }
   async login(req, res) {
