@@ -8,7 +8,7 @@ class Berita extends Client {
   async create(req, res) {
     try {
       const body = req.body;
-     const checkAdmin = jwtDecode(req.cookies.token);
+      const checkAdmin = jwtDecode(req.cookies.token);
       if (checkAdmin.role !== "admin")
         return super.response(res, 401, "invalid token");
       if (
@@ -39,7 +39,7 @@ class Berita extends Client {
   async delete(req, res) {
     try {
       const { id } = req.params;
-     const checkAdmin = jwtDecode(req.cookies.token);
+      const checkAdmin = jwtDecode(req.cookies.token);
       if (checkAdmin.role !== "admin")
         return super.response(res, 401, "invalid token");
       const check = await berita.findByIdAndDelete(id);
@@ -54,7 +54,7 @@ class Berita extends Client {
     try {
       const { id } = req.params;
       const body = req.body;
-     const checkAdmin = jwtDecode(req.cookies.token);
+      const checkAdmin = jwtDecode(req.cookies.token);
       if (checkAdmin.role !== "admin")
         return super.response(res, 401, "invalid token");
       const check = await berita.findById(id);
@@ -107,7 +107,7 @@ class Berita extends Client {
             localField: "id_admin",
             foreignField: "_id",
             as: "author",
-            pipeline: [{ $project: { email: 1 } }],
+            pipeline: [{ $project: { email: 1, nama: 1 } }],
           },
         },
         { $unwind: "$author" },
