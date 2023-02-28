@@ -19,10 +19,10 @@ class Admin extends Client {
         { expiresIn: "1d" }
       );
       res.cookie("token", token, { httpOnly: true, maxAge: 60 * 60 * 24 * 7 });
-      return super.response(res, 200);
+      return super.responseWithToken(res, 200, null, token);
     } catch (er) {
       console.log(er);
-      return super.response(res, 500, er);
+      return super.responseWithToken(res, 500, er);
     }
   }
   async login(req, res) {
