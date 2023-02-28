@@ -10,6 +10,9 @@ const { default: mongoose } = require("mongoose");
 class Surat extends Client {
   async create(req, res) {
     try {
+      const checkRole = jwtDecode(req.cookies.token).role;
+      if (checkRole !== "penduduk")
+        return super.response(res, 401, "invalid token");
       const date = new Date();
       const month = [
         "I",
@@ -27,7 +30,7 @@ class Surat extends Client {
       ];
       const body = req.body;
       const checkPenduduk = await penduduk.findById(
-        jwtDecode(req.headers.authorization).id
+        jwtDecode(req.cookies.token).id
       );
       const checkLayanan = await layanan.findById(req.body.id_layanan);
       if (!checkPenduduk)
@@ -36,7 +39,7 @@ class Surat extends Client {
         return super.response(res, 404, "layanan tidak ditemukan");
       const checkDesa = await desa.findById(checkPenduduk.id_desa);
       body.kepala_desa = checkDesa._id;
-      body.id_penduduk = jwtDecode(req.headers.authorization).id;
+      body.id_penduduk = jwtDecode(req.cookies.token).id;
       body.bulan = month[date.getMonth()];
       body.tahun = date.getFullYear();
       body.nomor_surat = crypto.randomInt(0, 1000);

@@ -20,7 +20,7 @@ class Berita extends Client {
           req.file.path,
           "berita"
         );
-        body.id_admin = jwtDecode(req.headers.authorization).id;
+        body.id_admin = jwtDecode(req.cookies.token).id;
         body.thumbnail = secure_url;
         body.id_thumbnail = public_id;
         await berita.create(body);
