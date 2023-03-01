@@ -22,4 +22,8 @@ const agenda = dbconnection.model("agenda", {
     type: ObjectId,
     default: null,
   },
+  createdAt: {
+    type: Date,
+    default: new Date(Date.now()),
+  },
 });

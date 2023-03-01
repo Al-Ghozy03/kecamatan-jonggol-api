@@ -9,10 +9,6 @@ const kewarganegaraan = dbconnection.model("kewarganegaraan", {
     type: Date,
     default: new Date(),
   },
-  updatedAt: {
-    type: Date,
-    default: new Date(),
-  },
 });
 
 module.exports = kewarganegaraan;

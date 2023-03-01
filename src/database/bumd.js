@@ -18,5 +18,9 @@ const bumd = dbconnection.model("bumd", {
     type: ObjectId,
     default:null
   },
+  createdAt: {
+    type: Date,
+    default: new Date(Date.now()),
+  },
 });
 module.exports = bumd

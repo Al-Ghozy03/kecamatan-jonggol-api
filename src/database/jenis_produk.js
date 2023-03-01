@@ -5,5 +5,9 @@ const jenisProduk = dbconnection.model("jenis_produk", {
     type: String,
     default: null,
   },
+  createdAt: {
+    type: Date,
+    default: new Date(Date.now()),
+  },
 });
 module.exports = jenisProduk

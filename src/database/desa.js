@@ -17,6 +17,10 @@ const desa = dbconnection.model("desa", {
     type: String,
     required: true,
   },
+  createdAt: {
+    type: Date,
+    default: new Date(Date.now()),
+  },
 });
 
 module.exports = desa;

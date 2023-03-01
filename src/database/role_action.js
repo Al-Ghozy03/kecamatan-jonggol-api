@@ -14,11 +14,7 @@ const role_action = dbconnection.model("role_action", {
   },
   createdAt: {
     type: Date,
-    default: new Date(),
-  },
-  updatedAt: {
-    type: Date,
-    default: new Date(),
+    default: new Date(Date.now()),
   },
 });
 

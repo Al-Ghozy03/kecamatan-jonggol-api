@@ -18,5 +18,9 @@ const gallery = dbconnection.model("gallery", {
     type: String,
     default: null,
   },
+  createdAt: {
+    type: Date,
+    default: new Date(Date.now()),
+  },
 });
-module.exports = gallery
+module.exports = gallery;

@@ -5,6 +5,10 @@ const video = dbconnection.model("video", {
     type: String,
     default: null,
   },
+  deskripsi: {
+    type: String,
+    default: null,
+  },
   thumbnail: {
     type: String,
     default: null,
@@ -12,6 +16,10 @@ const video = dbconnection.model("video", {
   youtube: {
     type: String,
     default: null,
+  },
+  createdAt: {
+    type: Date,
+    default: new Date(Date.now()),
   },
 });
 

@@ -27,6 +27,10 @@ const sekolah = dbconnection.model("sekolah", {
     type: ObjectId,
     default:null
   },
+  createdAt: {
+    type: Date,
+    default: new Date(Date.now()),
+  },
 });
 
 module.exports = sekolah

@@ -1,10 +1,10 @@
 const { default: jwtDecode } = require("jwt-decode");
 const { default: mongoose } = require("mongoose");
-const aplikasiPemerintah = require("../database/aplikasi_pemerintah");
+const galeri = require("../database/gallery");
 const Client = require("./client");
 const cloudinary_controller = require("./cloudinary_controller");
 
-class AplikasiPemerintah extends Client {
+class Galeri extends Client {
   async create(req, res) {
     try {
       const body = req.body;
@@ -18,11 +18,11 @@ class AplikasiPemerintah extends Client {
       ) {
         const { secure_url, public_id } = await cloudinary_controller.post(
           req.file.path,
-          "aplikasi_pemerintah"
+          "galeri"
         );
         body.thumbnail = secure_url;
         body.id_thumbnail = public_id;
-        await aplikasiPemerintah.create(body);
+        await galeri.create(body);
         return super.response(res, 200);
       }
       return super.response(
@@ -41,7 +41,7 @@ class AplikasiPemerintah extends Client {
       const checkAdmin = jwtDecode(req.cookies.token);
       if (checkAdmin.role !== "admin")
         return super.response(res, 401, "invalid token");
-      const check = await aplikasiPemerintah.findByIdAndDelete(id);
+      const check = await galeri.findByIdAndDelete(id);
       if (!check) return super.response(res, 404, "data tidak ditemukan");
       cloudinary_controller.delete(check.id_thumbnail);
       return super.response(res, 200);
@@ -56,7 +56,7 @@ class AplikasiPemerintah extends Client {
       const checkAdmin = jwtDecode(req.cookies.token);
       if (checkAdmin.role !== "admin")
         return super.response(res, 401, "invalid token");
-      const check = await aplikasiPemerintah.findById(id);
+      const check = await galeri.findById(id);
       if (!check) return super.response(res, 404, "data tidak ditemukan");
       if (req?.file?.path === undefined) {
         body.thumbnail = check.thumbnail;
@@ -70,7 +70,7 @@ class AplikasiPemerintah extends Client {
           await cloudinary_controller.delete(check.id_thumbnail);
           const { public_id, secure_url } = await cloudinary_controller.post(
             req.file.path,
-            "aplikasi_pemerintah"
+            "galeri"
           );
           body.thumbnail = secure_url;
           body.id_thumbnail = public_id;
@@ -82,7 +82,7 @@ class AplikasiPemerintah extends Client {
           );
         }
       }
-      await aplikasiPemerintah.updateOne({ _id: id }, { $set: { ...body } });
+      await galeri.updateOne({ _id: id }, { $set: { ...body } });
       return super.response(res, 200);
     } catch (er) {
       console.log(er);
@@ -91,17 +91,41 @@ class AplikasiPemerintah extends Client {
   }
   async get(req, res) {
     try {
-      const data = await aplikasiPemerintah.find();
-      return super.response(res, 200, null, data);
+      const { id_album, page, limit } = req.query;
+      const size = (parseInt(page) - 1) * parseInt(limit);
+      const count = await galeri.countDocuments({
+        ...(id_album !== undefined && { id_album }),
+      });
+      const data = await galeri
+        .find(
+          { ...(id_album !== undefined && { id_album }) },
+          {
+            nama: "$nama",
+            deskripsi: "$deskripsi",
+            thumbnail: "$thumbnail",
+            createdAt: "$createdAt",
+          }
+        )
+        .skip(size)
+        .limit(parseInt(limit));
+      return super.responseWithPagination(
+        res,
+        200,
+        null,
+        data,
+        count,
+        Math.ceil(count / parseInt(limit)),
+        parseInt(page)
+      );
     } catch (er) {
       console.log(er);
-      return super.response(res, 500, er);
+      return super.responseWithPagination(res, 500, er);
     }
   }
   async detail(req, res) {
     try {
       const { id } = req.params;
-      const data = await aplikasiPemerintah.findById(id);
+      const data = await galeri.findById(id);
       if (!data) return super.response(res, 404, "data tidak ditemukan");
       return super.response(res, 200, null, data);
     } catch (er) {
@@ -111,4 +135,4 @@ class AplikasiPemerintah extends Client {
   }
 }
 
-module.exports = new AplikasiPemerintah();
+module.exports = new Galeri();

@@ -38,7 +38,7 @@ class Admin extends Client {
         process.env.JWT_SIGN,
         { expiresIn: "1d" }
       );
-      res.cookie("token", token, { httpOnly: true, maxAge: 60 * 60 * 24 * 7 });
+      res.cookie("token", token, { httpOnly: true, maxAge: 60 * 60 * 24 * 30000 });
       return super.responseWithToken(res, 200, null, token);
     } catch (er) {
       return super.responseWithToken(res, 500, er);

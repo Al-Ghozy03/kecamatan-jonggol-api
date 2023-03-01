@@ -168,11 +168,7 @@ const penduduk = dbconnection.model("penduduk", {
   },
   createdAt: {
     type: Date,
-    default: new Date(),
-  },
-  updatedAt: {
-    type: Date,
-    default: new Date(),
+    default: new Date(Date.now()),
   },
 });
 

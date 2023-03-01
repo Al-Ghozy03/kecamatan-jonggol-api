@@ -38,6 +38,10 @@ const umkm = dbconnection.model("umkm", {
     type: ObjectId,
     default: null,
   },
+  createdAt: {
+    type: Date,
+    default: new Date(Date.now()),
+  },
 });
 
 module.exports = umkm;

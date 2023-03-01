@@ -23,11 +23,7 @@ const admin = dbconnection.model("admin", {
   },
   createdAt: {
     type: Date,
-    default: new Date(),
-  },
-  updatedAt: {
-    type: Date,
-    default: new Date(),
+    default: new Date(Date.now()),
   },
 });
 

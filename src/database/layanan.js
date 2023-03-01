@@ -19,11 +19,7 @@ const layanan = dbconnection.model("layanan", {
   },
   createdAt: {
     type: Date,
-    default: new Date(),
-  },
-  updatedAt: {
-    type: Date,
-    default: new Date(),
+    default: new Date(Date.now()),
   },
 });
 

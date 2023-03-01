@@ -18,6 +18,10 @@ const saranaKeagamaan = dbconnection.model("sarana_keagamaan", {
     type: ObjectId,
     default:null
   },
+  createdAt: {
+    type: Date,
+    default: new Date(Date.now()),
+  },
 });
 
 module.exports = saranaKeagamaan

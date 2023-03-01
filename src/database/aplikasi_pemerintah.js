@@ -17,6 +17,10 @@ const aplikasiPemerintah = dbconnection.model("aplikasi_pemerintah", {
     type: String,
     default: null,
   },
+  createdAt: {
+    type: Date,
+    default: new Date(Date.now()),
+  },
 });
 
 module.exports = aplikasiPemerintah
