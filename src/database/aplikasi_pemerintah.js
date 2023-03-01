@@ -9,6 +9,10 @@ const aplikasiPemerintah = dbconnection.model("aplikasi_pemerintah", {
     type: String,
     default: null,
   },
+  id_thumbnail: {
+    type: String,
+    default: null,
+  },
   deskripsi: {
     type: String,
     default: null,

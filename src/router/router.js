@@ -11,6 +11,8 @@ const { hub_keluarga_router } = require("./hub_keluarga_router");
 const { desa_router } = require("./desa_router");
 const { agama_router } = require("./agama_router");
 const { auth_router } = require("./auth_router");
+const { tentang_router } = require("./tentang_router");
+const { aplikasi_pemerintah_router } = require("./aplikasi_pemerintah_router");
 const router = require("express")();
 
 router.use("/auth", auth_router);
@@ -26,6 +28,8 @@ router.use("/kewarganegaraan", kewarganegaraan_router);
 router.use("/hub-keluarga", hub_keluarga_router);
 router.use("/desa", desa_router);
 router.use("/agama", agama_router);
+router.use("/tentang", tentang_router);
+router.use("/aplikasi-pemerintah", aplikasi_pemerintah_router);
 router.all("*", (req, res) =>
   res.status(404).json({ code: 404, message: "route not found" })
 );

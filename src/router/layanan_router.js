@@ -4,7 +4,6 @@ const upload = require("../middleware/upload");
 const validatorMiddleware = require("../middleware/validator_middleware");
 const {
   layananCreateValidator,
-  layananEditValidator,
 } = require("../validator/layanan_validator");
 
 const router = require("express")();
@@ -20,8 +19,6 @@ router.post(
 router.put(
   "/edit/:id",
   upload.single("template"),
-  layananEditValidator,
-  validatorMiddleware,
   layanan_controller.edit
 );
 router.delete("/delete/:id", layanan_controller.delete);

@@ -28,7 +28,7 @@ class Layanan extends Client {
   }
   async edit(req, res) {
     try {
-      if (checkAdmin.role !== "admin" )
+      if (checkAdmin.role !== "admin")
         return super.response(res, 401, "invalid token");
       const body = req.body;
       const { id } = req.params;
