@@ -18,6 +18,10 @@ const gallery = dbconnection.model("gallery", {
     type: String,
     default: null,
   },
+  id_thumbnail: {
+    type: String,
+    default: null,
+  },
   createdAt: {
     type: Date,
     default: new Date(Date.now()),
