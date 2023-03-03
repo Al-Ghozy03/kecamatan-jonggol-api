@@ -1,7 +1,7 @@
 const jwt = require("jsonwebtoken");
 const { default: jwtDecode } = require("jwt-decode");
 const admin = require("../../models").admin;
-const penduduk = require("../../models/penduduk");
+const penduduk = require("../../models").penduduk;
 
 async function jwtMiddleware(req, res, next) {
   const { authorization } = req.headers;
@@ -10,7 +10,6 @@ async function jwtMiddleware(req, res, next) {
   const token = authorization.split(" ")[1];
   jwt.verify(token, process.env.JWT_SIGN, async (err, decode) => {
     if (err) {
-      console.log(err);
       if (err.message === "jwt expired")
         return res.status(401).json({
           message: "token expired",

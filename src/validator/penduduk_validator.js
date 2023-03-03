@@ -11,8 +11,6 @@ const pendudukRegisterValidator = [
     .isLength({ min: 6 })
     .withMessage("password minimal 6 karakter"),
   check("id_desa")
-    .isMongoId()
-    .withMessage("pastikan id_desa sesuai dengan mongo id")
     .isLength({ min: 1 })
     .withMessage("desa tidak boleh kosong"),
 ];
@@ -21,10 +19,9 @@ const pendudukEditValidator = [
   check("alamat").isLength({ min: 1 }).withMessage("alamat tidak boleh kosong"),
   check("rt").isLength({ min: 1 }).withMessage("RT tidak boleh kosong"),
   check("rw").isLength({ min: 1 }).withMessage("RW tidak boleh kosong"),
-  check("dusun").isLength({ min: 1 }).withMessage("dusun tidak boleh kosong"),
   check("nomor_kk").isNumeric().withMessage("nomor KK harus angka")
-    .isLength({ min: 1 })
-    .withMessage("nomor kk tidak boleh kosong"),
+    .isLength({ min: 16 })
+    .withMessage("nomor kk harus 16 digit"),
   check("jenis_kelamin")
     .isLength({ min: 1 })
     .withMessage("jenis kelamin tidak boleh kosong"),
@@ -73,13 +70,13 @@ const pendudukEditValidator = [
     .isLength({ min: 1 })
     .withMessage("nomor dokumen KITAS tidak boleh kosong"),
   check("nik_ayah")
-    .isLength({ min: 1 })
-    .withMessage("NIK ayah tidak boleh kosong")
+  .isLength({ min: 16 })
+  .withMessage("nomor kk harus 16 digit")
     .isNumeric()
     .withMessage("NIK ayah harus angka"),
   check("nik_ibu")
-    .isLength({ min: 1 })
-    .withMessage("NIK ibu tidak boleh kosong").isNumeric().withMessage("NIK ibu harus angka"),
+  .isLength({ min: 16 })
+  .withMessage("nomor kk harus 16 digit").isNumeric().withMessage("NIK ibu harus angka"),
   check("nomor_akta_perkawinan")
     .isLength({ min: 1 })
     .withMessage("nomor akta perkawinan tidak boleh kosong"),
@@ -87,8 +84,6 @@ const pendudukEditValidator = [
     .isLength({ min: 1 })
     .withMessage("tanggal perkawinan tidak boleh kosong"),
   check("nomor_akta_cerai")
-    .isNumeric()
-    .withMessage("nomor akta cerai harus angka")
     .isLength({ min: 1 })
     .withMessage("nomor akta cerai tidak boleh kosong"),
   check("tanggal_cerai")
