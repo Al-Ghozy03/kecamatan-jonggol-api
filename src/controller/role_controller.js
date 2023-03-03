@@ -1,5 +1,5 @@
 const { default: jwtDecode } = require("jwt-decode");
-const role = require("../database/role");
+const role = require("../../models/role");
 const Client = require("./client");
 
 class Role extends Client {

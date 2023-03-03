@@ -1,15 +1,16 @@
 const jwt = require("jsonwebtoken");
 const { default: jwtDecode } = require("jwt-decode");
-const admin = require("../database/admin");
-const penduduk = require("../database/penduduk");
+const admin = require("../../models").admin;
+const penduduk = require("../../models/penduduk");
 
 async function jwtMiddleware(req, res, next) {
-  const { token } = req.cookies;
-  if (token === undefined)
+  const { authorization } = req.headers;
+  if (authorization === undefined)
     return res.status(401).json({ code: 401, message: "token is required" });
-
+  const token = authorization.split(" ")[1];
   jwt.verify(token, process.env.JWT_SIGN, async (err, decode) => {
     if (err) {
+      console.log(err);
       if (err.message === "jwt expired")
         return res.status(401).json({
           message: "token expired",
@@ -20,14 +21,14 @@ async function jwtMiddleware(req, res, next) {
     } else {
       try {
         if (decode.role === "penduduk") {
-          const data = await penduduk.findById(decode?.id);
+          const data = await penduduk.findByPk(decode?.id);
           if (!data)
             return res.json({
               message: "user sudah dihapus",
             });
           req.id = decode?.id;
         } else {
-          const data = await admin.findById(decode?.id);
+          const data = await admin.findByPk(decode?.id);
           if (!data)
             return res.json({
               message: "user sudah dihapus",
@@ -45,9 +46,11 @@ async function jwtMiddleware(req, res, next) {
   });
 }
 async function authme(req, res) {
-  const { token } = req.cookies;
-  if (token === undefined)
+  const { authorization } = req.headers;
+
+  if (authorization === undefined)
     return res.status(401).json({ message: "token is required", token: null });
+  const token = authorization.split(" ")[1];
   jwt.verify(token, process.env.JWT_SIGN, (er, decode) => {
     if (er?.message === "invalid signature") {
       return res.status(401).json({ message: "invalid token", token: null });

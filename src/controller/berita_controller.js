@@ -1,6 +1,6 @@
 const { default: jwtDecode } = require("jwt-decode");
 const { default: mongoose } = require("mongoose");
-const berita = require("../database/berita");
+const berita = require("../../models/berita");
 const Client = require("./client");
 const cloudinary_controller = require("./cloudinary_controller");
 

@@ -1,5 +1,5 @@
 const { default: jwtDecode } = require("jwt-decode");
-const tentang = require("../database/tentang");
+const tentang = require("../../models/tentang");
 const Client = require("./client");
 
 class Tentang extends Client {

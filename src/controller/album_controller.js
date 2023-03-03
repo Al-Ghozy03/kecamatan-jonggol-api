@@ -1,5 +1,5 @@
 const { default: jwtDecode } = require("jwt-decode");
-const album = require("../database/album");
+const album = require("../../models/album");
 const Client = require("./client");
 
 class Album extends Client {

@@ -1,5 +1,5 @@
 const { default: jwtDecode } = require("jwt-decode");
-const desa = require("../database/desa");
+const desa = require("../../models/desa");
 const Client = require("./client");
 
 class Desa extends Client {

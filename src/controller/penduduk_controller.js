@@ -1,8 +1,8 @@
-const penduduk = require("../database/penduduk");
+const penduduk = require("../../models/penduduk");
 const Client = require("./client");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
-const desa = require("../database/desa");
+const desa = require("../../models/desa");
 const { default: jwtDecode } = require("jwt-decode");
 require("dotenv").config();
 

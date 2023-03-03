@@ -1,24 +1,24 @@
-const admin = require("../database/admin");
+const admin = require("../../models").admin;
+const role = require("../../models").role;
+const action = require("../../models").action;
+const roleaction = require("../../models").role_action;
 const Client = require("./client");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 const { default: jwtDecode } = require("jwt-decode");
+const { Op } = require("sequelize");
 require("dotenv").config();
 
 class Admin extends Client {
   async register(req, res) {
     try {
       let body = req.body;
-      const check = await admin.findOne({ email: body.email });
+      const check = await admin.findOne({ where: { email: body.email } });
+      const checkRole = await role.findByPk(body.id_role);
       if (check) return super.response(res, 400, "email sudah terdaftar");
+      if (!checkRole) return super.response(res, 404, "role tidak ditemukan");
       body.password = await bcrypt.hashSync(body.password, 10);
       await admin.create(body);
-      // const token = jwt.sign(
-      //   { id: data._id, role: "admin" },
-      //   process.env.JWT_SIGN,
-      //   { expiresIn: "1d" }
-      // );
-      // res.cookie("token", token, { httpOnly: true, maxAge: 60 * 60 * 24 * 7 });
       return super.response(res, 200, null);
     } catch (er) {
       console.log(er);
@@ -28,19 +28,44 @@ class Admin extends Client {
   async login(req, res) {
     try {
       const { email, password } = req.body;
-      const check = await admin.findOne({ email });
+      const check = await admin.findOne({ where: { email } });
+      const data = await admin.findOne({
+        attributes: ["email", "username"],
+        where: { email },
+        include: [
+          {
+            model: role,
+            as: "role",
+            attributes: ["role_name"],
+            include: {
+              model: roleaction,
+              as: "role_action",
+              attributes: ["id"],
+              include: {
+                model: action,
+                as: "action",
+                attributes: ["action_name", "description"],
+              },
+            },
+          },
+        ],
+      });
       if (!check)
         return super.responseWithToken(res, 404, "email tidak ditemukan");
       const verify = await bcrypt.compareSync(password, check.password);
       if (!verify) return super.responseWithToken(res, 400, "password salah");
       const token = jwt.sign(
-        { id: check._id, role: "admin" },
+        { id: check.id, role: "admin" },
         process.env.JWT_SIGN,
         { expiresIn: "1d" }
       );
-      res.cookie("token", token, { httpOnly: true, maxAge: 60 * 60 * 24 * 30000 });
-      return super.responseWithToken(res, 200, null, token);
+      res.cookie("token", token, {
+        httpOnly: true,
+        maxAge: 60 * 60 * 24 * 30000,
+      });
+      return super.responseWithToken(res, 200, null, data, token);
     } catch (er) {
+      console.log(er);
       return super.responseWithToken(res, 500, er);
     }
   }
@@ -48,80 +73,45 @@ class Admin extends Client {
     try {
       const { page, limit, key } = req.query;
       const size = (parseInt(page) - 1) * parseInt(limit);
-      const checkAdmin = jwtDecode(req.cookies.token);
+      const checkAdmin = jwtDecode(req.headers.authorization);
       if (checkAdmin.role !== "admin")
         return super.response(res, 401, "invalid token");
-      const pagination = [];
-      const pipeline = [
-        { $match: { email: { $regex: new RegExp(key, "i") } } },
-        {
-          $lookup: {
-            from: "role_actions",
-            localField: "id_role",
-            foreignField: "id_role",
-            as: "role_action",
-            pipeline: [
-              { $project: { id_role: 1, id_action: 1 } },
-              {
-                $lookup: {
-                  from: "actions",
-                  localField: "id_action",
-                  foreignField: "_id",
-                  as: "action",
-                  pipeline: [{ $project: { action_name: 1, description: 1 } }],
-                },
-              },
-              { $unwind: "$action" },
-              {
-                $lookup: {
-                  from: "roles",
-                  localField: "id_role",
-                  foreignField: "_id",
-                  as: "role",
-                  pipeline: [{ $project: { role_name: 1 } }],
-                },
-              },
-              { $unwind: "$role" },
-            ],
-          },
-        },
-        {
-          $project: {
-            email: 1,
-            nama: 1,
-            role_action: 1,
-          },
-        },
-        {
-          $facet: {
-            data: pagination,
-            total: [{ $count: "count" }],
-          },
-        },
-      ];
-      if (page !== undefined && limit !== undefined) {
-        pagination.push(
+      const { count, rows } = await admin.findAndCountAll({
+        attributes: ["id", "email", "username"],
+        ...(page !== undefined &&
+          limit !== undefined && {
+            limit: parseInt(limit),
+            offset: size,
+          }),
+        ...(key !== undefined && {
+          where: { email: { [Op.substring]: key } },
+        }),
+        include: [
           {
-            $skip: size,
+            model: role,
+            as: "role",
+            attributes: ["role_name"],
+            include: {
+              model: roleaction,
+              as: "role_action",
+              attributes: ["id"],
+              include: {
+                model: action,
+                as: "action",
+                attributes: ["action_name", "description"],
+              },
+            },
           },
-          {
-            $limit: parseInt(limit),
-          }
-        );
-      }
-      const data = await admin.aggregate(pipeline);
+        ],
+      });
       return super.responseWithPagination(
         res,
         200,
         null,
-        data[0].data,
-        data[0].total.length === 0 ? 0 : data[0].total[0].count,
-        Math.ceil(
-          data[0].total.length === 0
-            ? 0
-            : data[0].total[0].count / parseInt(limit)
-        ),
-        parseInt(parseInt(page))
+        rows,
+        count,
+        Math.ceil(count / parseInt(limit)),
+        parseInt(page)
       );
     } catch (er) {
       console.log(er);

@@ -1,5 +1,5 @@
 const { default: jwtDecode } = require("jwt-decode");
-const layanan = require("../database/layanan");
+const layanan = require("../../models/layanan");
 const Client = require("./client");
 const cloudinary_controller = require("./cloudinary_controller");
 

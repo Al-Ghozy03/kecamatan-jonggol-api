@@ -8,13 +8,14 @@ class Client {
       data,
     });
   }
-  responseWithToken(res, code, message, token = null) {
+  responseWithToken(res, code, message, data = null, token = null) {
     if (code === 200) {
       message = "success";
     }
     return res.status(code).json({
       message,
       token,
+      data,
     });
   }
   responseWithPagination(

@@ -1,10 +1,10 @@
 const { default: jwtDecode } = require("jwt-decode");
-const layanan = require("../database/layanan");
-const penduduk = require("../database/penduduk");
-const surat = require("../database/surat");
+const layanan = require("../../models/layanan");
+const penduduk = require("../../models/penduduk");
+const surat = require("../../models/surat");
 const Client = require("./client");
 const crypto = require("crypto");
-const desa = require("../database/desa");
+const desa = require("../../models/desa");
 const { default: mongoose } = require("mongoose");
 
 class Surat extends Client {

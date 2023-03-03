@@ -1,5 +1,5 @@
 const { default: jwtDecode } = require("jwt-decode");
-const action = require("../database/action");
+const action = require("../../models").action;
 const Client = require("./client");
 
 class Action extends Client {
