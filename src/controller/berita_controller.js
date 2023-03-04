@@ -1,6 +1,7 @@
 const { default: jwtDecode } = require("jwt-decode");
-const { default: mongoose } = require("mongoose");
-const berita = require("../../models/berita");
+const { Op } = require("sequelize");
+const berita = require("../../models").berita;
+const admin = require("../../models").admin;
 const Client = require("./client");
 const cloudinary_controller = require("./cloudinary_controller");
 
@@ -8,7 +9,7 @@ class Berita extends Client {
   async create(req, res) {
     try {
       const body = req.body;
-      const checkAdmin = jwtDecode(req.cookies.token);
+      const checkAdmin = jwtDecode(req.headers.authorization);
       if (checkAdmin.role !== "admin")
         return super.response(res, 401, "invalid token");
       if (
@@ -20,7 +21,7 @@ class Berita extends Client {
           req.file.path,
           "berita"
         );
-        body.id_admin = jwtDecode(req.cookies.token).id;
+        body.id_admin = jwtDecode(req.headers.authorization).id;
         body.thumbnail = secure_url;
         body.id_thumbnail = public_id;
         await berita.create(body);
@@ -39,12 +40,13 @@ class Berita extends Client {
   async delete(req, res) {
     try {
       const { id } = req.params;
-      const checkAdmin = jwtDecode(req.cookies.token);
+      const checkAdmin = jwtDecode(req.headers.authorization);
       if (checkAdmin.role !== "admin")
         return super.response(res, 401, "invalid token");
-      const check = await berita.findByIdAndDelete(id);
+      const check = await berita.findByPk(id);
       if (!check) return super.response(res, 404, "data tidak ditemukan");
-      cloudinary_controller.delete(check.id_thumbnail);
+      await cloudinary_controller.delete(check.id_thumbnail);
+      await berita.destroy({ where: { id } });
       return super.response(res, 200);
     } catch (er) {
       return super.response(res, 500, er);
@@ -54,10 +56,10 @@ class Berita extends Client {
     try {
       const { id } = req.params;
       const body = req.body;
-      const checkAdmin = jwtDecode(req.cookies.token);
+      const checkAdmin = jwtDecode(req.headers.authorization);
       if (checkAdmin.role !== "admin")
         return super.response(res, 401, "invalid token");
-      const check = await berita.findById(id);
+      const check = await berita.findByPk(id);
       if (!check) return super.response(res, 404, "data tidak ditemukan");
       if (req?.file?.path === undefined) {
         body.thumbnail = check.thumbnail;
@@ -83,7 +85,7 @@ class Berita extends Client {
           );
         }
       }
-      await berita.updateOne({ _id: id }, { $set: { ...body } });
+      await berita.update(body, { where: { id } });
       return super.response(res, 200);
     } catch (er) {
       console.log(er);
@@ -92,63 +94,33 @@ class Berita extends Client {
   }
   async get(req, res) {
     try {
-      const { page, limit, key } = req.query;
+      const { page, limit, key, sort } = req.query;
       const size = (parseInt(page) - 1) * parseInt(limit);
-      const pagination = [];
-      const pipeline = [
-        {
-          $match: {
-            ...(key !== undefined && { judul: { $regex: key, $options: "i" } }),
-          },
+      const { rows, count } = await berita.findAndCountAll({
+        ...(sort !== undefined && {
+          order: [["createdAt", sort === "terbaru" ? "DESC" : "ASC"]],
+        }),
+        ...(page !== undefined &&
+          limit !== undefined && {
+            offset: size,
+            limit: parseInt(limit),
+          }),
+        ...(key !== undefined && {
+          where: { judul: { [Op.substring]: key } },
+        }),
+        include: {
+          model: admin,
+          as: "author",
+          attributes: ["email", "username"],
         },
-        {
-          $lookup: {
-            from: "admins",
-            localField: "id_admin",
-            foreignField: "_id",
-            as: "author",
-            pipeline: [{ $project: { email: 1, nama: 1 } }],
-          },
-        },
-        { $unwind: "$author" },
-        {
-          $project: {
-            judul: 1,
-            konten: 1,
-            thumbnail: 1,
-            author: 1,
-            createdAt: 1,
-          },
-        },
-        {
-          $facet: {
-            data: pagination,
-            total: [{ $count: "count" }],
-          },
-        },
-      ];
-      if (page !== undefined && limit !== undefined) {
-        pagination.push(
-          {
-            $skip: size,
-          },
-          {
-            $limit: parseInt(limit),
-          }
-        );
-      }
-      const data = await berita.aggregate(pipeline);
+      });
       return super.responseWithPagination(
         res,
         200,
         null,
-        data[0].data,
-        data[0].total.length === 0 ? 0 : data[0].total[0].count,
-        Math.ceil(
-          data[0].total.length === 0
-            ? 0
-            : data[0].total[0].count / parseInt(limit)
-        ),
+        rows,
+        count,
+        Math.ceil(count / parseInt(limit)),
         parseInt(parseInt(page))
       );
     } catch (er) {
@@ -159,32 +131,16 @@ class Berita extends Client {
   async detail(req, res) {
     try {
       const { id } = req.params;
-      const data = await berita.aggregate([
-        {
-          $match: { _id: mongoose.Types.ObjectId(id) },
+      const data = await berita.findOne({
+        where: { id },
+        include: {
+          model: admin,
+          as: "author",
+          attributes: ["email", "username"],
         },
-        {
-          $lookup: {
-            from: "admins",
-            localField: "id_admin",
-            foreignField: "_id",
-            as: "author",
-            pipeline: [{ $project: { email: 1 } }],
-          },
-        },
-        { $unwind: "$author" },
-        {
-          $project: {
-            judul: 1,
-            konten: 1,
-            thumbnail: 1,
-            author: 1,
-            createdAt: 1,
-          },
-        },
-      ]);
-      if (!data[0]) return super.response(res, 404, "data tidak ditemukan");
-      return super.response(res, 200, null, data[0]);
+      });
+      if (!data) return super.response(res, 404, "data tidak ditemukan");
+      return super.response(res, 200, null, data);
     } catch (er) {
       console.log(er);
       return super.response(res, 500, er);

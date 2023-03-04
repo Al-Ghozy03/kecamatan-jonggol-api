@@ -191,15 +191,15 @@ class Penduduk extends Client {
       return super.response(res, 500, er);
     }
   }
-  async totalPenduduk(req, res) {
-    try {
-      const total = await penduduk.countDocuments();
-      return super.response(res, 200, null, { total });
-    } catch (er) {
-      console.log(er);
-      return super.response(res, 500, er);
-    }
-  }
+  // async totalPenduduk(req, res) {
+  //   try {
+  //     const total = await penduduk.countDocuments();
+  //     return super.response(res, 200, null, { total });
+  //   } catch (er) {
+  //     console.log(er);
+  //     return super.response(res, 500, er);
+  //   }
+  // }
 }
 
 module.exports = new Penduduk();

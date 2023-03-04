@@ -1,7 +1,5 @@
-'use strict';
-const {
-  Model
-} = require('sequelize');
+"use strict";
+const { Model } = require("sequelize");
 module.exports = (sequelize, DataTypes) => {
   class album extends Model {
     /**
@@ -11,13 +9,17 @@ module.exports = (sequelize, DataTypes) => {
      */
     static associate(models) {
       // define association here
+      album.hasOne(models.galeri, { as: "cover",foreignKey:"id_album" });
     }
   }
-  album.init({
-    nama_album: DataTypes.STRING
-  }, {
-    sequelize,
-    modelName: 'album',
-  });
+  album.init(
+    {
+      nama_album: DataTypes.STRING,
+    },
+    {
+      sequelize,
+      modelName: "album",
+    }
+  );
   return album;
 };

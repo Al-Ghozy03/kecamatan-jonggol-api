@@ -14,7 +14,7 @@ class Cloudinary {
     return new Promise((resolve, reject) => {
       cloudinary.uploader
         .upload(file, {
-          folder: `/siforsa/${folder}`,
+          folder: `/kecamatan jonggol/${folder}`,
           use_filename: true,
         })
         .then((res) => {
@@ -29,7 +29,7 @@ class Cloudinary {
     return new Promise((resolve, reject) => {
       cloudinary.uploader
         .upload(file.path, {
-          folder: `/siforsa/${folder}`,
+          folder: `/kecamatan jonggol/${folder}`,
           public_id: `${file.originalname.substring(
             0,
             file.originalname.length - 5

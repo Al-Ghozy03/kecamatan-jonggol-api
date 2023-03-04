@@ -1,23 +1,24 @@
 const { default: jwtDecode } = require("jwt-decode");
-const role = require("../../models/role");
-const action = require("../../models/action");
-const role_action = require("../../models/role_action");
+const role = require("../../models").role;
+const action = require("../../models").action;
+const role_action = require("../../models").role_action;
 const Client = require("./client");
 
 class RoleAction extends Client {
   async create(req, res) {
     try {
       const { id_role, id_action } = req.body;
-     const checkAdmin = jwtDecode(req.cookies.token);
-      if (checkAdmin.role !== "admin" )
+      const checkAdmin = jwtDecode(req.headers.authorization);
+      if (checkAdmin.role !== "admin")
         return super.response(res, 401, "invalid token");
-      const checkRole = await role.findById(id_role);
-      const checkAction = await action.findById(id_action);
+      const checkRole = await role.findByPk(id_role);
+      const checkAction = await action.findByPk(id_action);
       if (!checkRole) return super.response(res, 404, "role tidak ditemukan");
       if (!checkAction)
         return super.response(res, 404, "action tidak ditemukan");
-
-      const check = await role_action.findOne({ id_role, id_action });
+      const check = await role_action.findOne({
+        where: { id_role, id_action },
+      });
       if (check) return super.response(res, 400, "role action sudah terdaftar");
       const body = req.body;
       role_action.create(body);
@@ -29,12 +30,23 @@ class RoleAction extends Client {
   }
   async edit(req, res) {
     try {
-     const checkAdmin = jwtDecode(req.cookies.token);
-      if (checkAdmin.role !== "admin" )
+      const checkAdmin = jwtDecode(req.headers.authorization);
+      if (checkAdmin.role !== "admin")
         return super.response(res, 401, "invalid token");
       const { id } = req.params;
-      const data = await role_action.findByIdAndUpdate(id, { $set: req.body });
+      const { id_role, id_action } = req.body;
+      const data = await role_action.findByPk(id);
       if (!data) return super.response(res, 404, "data tidak ditemukan");
+      const checkRole = await role.findByPk(id_role);
+      const checkAction = await action.findByPk(id_action);
+      if (!checkRole) return super.response(res, 404, "role tidak ditemukan");
+      if (!checkAction)
+        return super.response(res, 404, "action tidak ditemukan");
+      const check = await role_action.findOne({
+        where: { id_role, id_action },
+      });
+      if (check) return super.response(res, 400, "role action sudah terdaftar");
+      await role_action.update({ id_role, id_action }, { where: { id } });
       return super.response(res, 200);
     } catch (er) {
       console.log(er);
@@ -43,12 +55,13 @@ class RoleAction extends Client {
   }
   async delete(req, res) {
     try {
-     const checkAdmin = jwtDecode(req.cookies.token);
-      if (checkAdmin.role !== "admin" )
+      const checkAdmin = jwtDecode(req.headers.authorization);
+      if (checkAdmin.role !== "admin")
         return super.response(res, 401, "invalid token");
       const { id } = req.params;
-      const data = await role_action.findByIdAndDelete(id);
+      const data = await role_action.findByPk(id);
       if (!data) return super.response(res, 404, "data tidak ditemukan");
+      await role_action.destroy({ where: { id } });
       return super.response(res, 200);
     } catch (er) {
       console.log(er);
@@ -59,66 +72,36 @@ class RoleAction extends Client {
     try {
       const { page, limit } = req.query;
       const size = (parseInt(page) - 1) * parseInt(limit);
-     const checkAdmin = jwtDecode(req.cookies.token);
-      if (checkAdmin.role !== "admin" )
+      const checkAdmin = jwtDecode(req.headers.authorization);
+      if (checkAdmin.role !== "admin")
         return super.response(res, 401, "invalid token");
-      const pagination = [];
-      const pipeline = [
-        {
-          $lookup: {
-            from: "roles",
-            localField: "id_role",
-            foreignField: "_id",
-            as: "role",
-            pipeline: [{ $project: { role_name: 1 } }],
-          },
-        },
-        {
-          $lookup: {
-            from: "actions",
-            localField: "id_action",
-            foreignField: "_id",
-            as: "action",
-            pipeline: [{ $project: { action_name: 1 } }],
-          },
-        },
-        {
-          $project: {
-            role: 1,
-            action: 1,
-          },
-        },
-        { $unwind: "$role" },
-        { $unwind: "$action" },
-        {
-          $facet: {
-            data: pagination,
-            total: [{ $count: "count" }],
-          },
-        },
-      ];
-      if (page !== undefined && limit !== undefined) {
-        pagination.push(
+      const { count, rows } = await role.findAndCountAll({
+        attributes: ["id", "role_name"],
+        ...(page !== undefined &&
+          limit !== undefined && {
+            offset: size,
+            limit: parseInt(limit),
+          }),
+        include: [
           {
-            $skip: size,
+            model: role_action,
+            as: "role_action",
+            attributes: ["id_role", "id_action"],
+            include: {
+              model: action,
+              as: "action",
+              attributes: ["action_name", "description"],
+            },
           },
-          {
-            $limit: parseInt(limit),
-          }
-        );
-      }
-      const data = await role_action.aggregate(pipeline);
+        ],
+      });
       return super.responseWithPagination(
         res,
         200,
         null,
-        data[0].data,
-        data[0].total.length === 0 ? 0 : data[0].total[0].count,
-        Math.ceil(
-          data[0].total.length === 0
-            ? 0
-            : data[0].total[0].count / parseInt(limit)
-        ),
+        rows,
+        count,
+        Math.ceil(count / parseInt(limit)),
         parseInt(parseInt(page))
       );
     } catch (er) {

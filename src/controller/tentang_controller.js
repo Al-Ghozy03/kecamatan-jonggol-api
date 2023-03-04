@@ -1,11 +1,11 @@
 const { default: jwtDecode } = require("jwt-decode");
-const tentang = require("../../models/tentang");
+const tentang = require("../../models").tentang;
 const Client = require("./client");
 
 class Tentang extends Client {
   async create(req, res) {
     try {
-      const checkAdmin = jwtDecode(req.cookies.token);
+      const checkAdmin = jwtDecode(req.headers.authorization);
       if (checkAdmin.role !== "admin")
         return super.response(res, 401, "invalid token");
       const body = req.body;
@@ -18,12 +18,15 @@ class Tentang extends Client {
   }
   async edit(req, res) {
     try {
-      const checkAdmin = jwtDecode(req.cookies.token);
+      const checkAdmin = jwtDecode(req.headers.authorization);
       if (checkAdmin.role !== "admin")
         return super.response(res, 401, "invalid token");
-      const { id } = req.params;
-      const data = await tentang.findByIdAndUpdate(id, { $set: req.body });
+      const data = await tentang.findByPk(1);
       if (!data) return super.response(res, 404, "data tidak ditemukan");
+      await tentang.update(
+        { deskripsi: req.body.deskripsi },
+        { where: { id: 1 } }
+      );
       return super.response(res, 200);
     } catch (er) {
       console.log(er);
@@ -32,8 +35,8 @@ class Tentang extends Client {
   }
   async get(req, res) {
     try {
-      const data = await tentang.find({}, { deskripsi: "$deskripsi" }).limit(1);
-      return super.response(res, 200, null, data[0]);
+      const data = await tentang.findOne({ where: { id: 1 } });
+      return super.response(res, 200, null, data);
     } catch (er) {
       console.log(er);
       return super.response(res, 500, er);

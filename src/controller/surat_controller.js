@@ -1,16 +1,15 @@
 const { default: jwtDecode } = require("jwt-decode");
-const layanan = require("../../models/layanan");
-const penduduk = require("../../models/penduduk");
-const surat = require("../../models/surat");
+const layanan = require("../../models").layanan;
+const penduduk = require("../../models").penduduk;
+const surat = require("../../models").surat;
+const desa = require("../../models").desa;
 const Client = require("./client");
 const crypto = require("crypto");
-const desa = require("../../models/desa");
-const { default: mongoose } = require("mongoose");
 
 class Surat extends Client {
   async create(req, res) {
     try {
-      const checkRole = jwtDecode(req.cookies.token).role;
+      const checkRole = jwtDecode(req.headers.authorization).role;
       if (checkRole !== "penduduk")
         return super.response(res, 401, "invalid token");
       const date = new Date();
@@ -29,17 +28,17 @@ class Surat extends Client {
         "XII",
       ];
       const body = req.body;
-      const checkPenduduk = await penduduk.findById(
-        jwtDecode(req.cookies.token).id
+      const checkPenduduk = await penduduk.findByPk(
+        jwtDecode(req.headers.authorization).id
       );
-      const checkLayanan = await layanan.findById(req.body.id_layanan);
+      const checkLayanan = await layanan.findByPk(req.body.id_layanan);
       if (!checkPenduduk)
         return super.response(res, 404, "penduduk tidak ditemukan");
       if (!checkLayanan)
         return super.response(res, 404, "layanan tidak ditemukan");
-      const checkDesa = await desa.findById(checkPenduduk.id_desa);
-      body.kepala_desa = checkDesa._id;
-      body.id_penduduk = jwtDecode(req.cookies.token).id;
+      const checkDesa = await desa.findByPk(checkPenduduk.id_desa);
+      body.kepala_desa = checkDesa.id;
+      body.id_penduduk = jwtDecode(req.headers.authorization).id;
       body.bulan = month[date.getMonth()];
       body.tahun = date.getFullYear();
       body.nomor_surat = crypto.randomInt(0, 1000);
@@ -236,7 +235,7 @@ class Surat extends Client {
   }
   async edit(req, res) {
     try {
-      const checkAdmin = jwtDecode(req.cookies.token);
+      const checkAdmin = jwtDecode(req.headers.authorization);
       if (checkAdmin.role !== "admin")
         return super.response(res, 401, "invalid token");
       const { id } = req.params;

@@ -1,5 +1,6 @@
 const { default: jwtDecode } = require("jwt-decode");
-const layanan = require("../../models/layanan");
+const { Op } = require("sequelize");
+const layanan = require("../../models").layanan;
 const Client = require("./client");
 const cloudinary_controller = require("./cloudinary_controller");
 
@@ -7,7 +8,7 @@ class Layanan extends Client {
   async create(req, res) {
     try {
       const body = req.body;
-      const checkAdmin = jwtDecode(req.cookies.token);
+      const checkAdmin = jwtDecode(req.headers.authorization);
       if (checkAdmin.role !== "admin")
         return super.response(res, 401, "invalid token");
       if (
@@ -28,11 +29,12 @@ class Layanan extends Client {
   }
   async edit(req, res) {
     try {
+      const checkAdmin = jwtDecode(req.headers.authorization);
       if (checkAdmin.role !== "admin")
         return super.response(res, 401, "invalid token");
       const body = req.body;
       const { id } = req.params;
-      const data = await layanan.findById(id);
+      const data = await layanan.findByPk(id);
       if (!data) super.response(res, 404, "layanan tidak ditemukan");
       if (req?.file?.path === undefined) {
         body.template = data.template;
@@ -49,20 +51,20 @@ class Layanan extends Client {
         body.template = secure_url;
         body.id_template = public_id;
       }
-      await layanan.updateOne({ _id: id }, { $set: { ...body } });
-      return res.status(200).json({ code: 200, message: "success" });
+      await layanan.update(body, { where: { id } });
+      return super.response(res, 200, null);
     } catch (er) {
       console.log(er);
-      return res.status(500).json({ code: 500, message: er });
+      return super.response(res, 500, er);
     }
   }
   async delete(req, res) {
     try {
       const { id } = req.params;
-      const check = await layanan.findById(id);
+      const check = await layanan.findByPk(id);
       if (!check) return super.response(res, 404, "layanan tidak ditemukan");
       await cloudinary_controller.delete(check.id_template);
-      await layanan.deleteOne({ _id: id });
+      await layanan.destroy({ where: { id } });
       return super.response(res, 200);
     } catch (er) {
       console.log(er);
@@ -73,32 +75,25 @@ class Layanan extends Client {
     try {
       const { page, limit, key } = req.query;
       const size = (parseInt(page) - 1) * parseInt(limit);
-      const data = await layanan
-        .find(
-          {
-            ...(key !== undefined && {
-              nama: { $regex: key, $options: "i" },
-            }),
-          },
-          {
-            nama: "$nama",
-            syarat: "$syarat",
-            template: "$template",
-            id_template: "$id_template",
-          }
-        )
-        .skip(size)
-        .limit(parseInt(limit));
-      const count = await layanan.countDocuments({
+      const { rows, count } = await layanan.findAndCountAll({
+        attributes: ["id", "nama", "syarat", "template"],
+        ...(page !== undefined &&
+          limit !== undefined && {
+            offset: size,
+            limit: parseInt(limit),
+          }),
         ...(key !== undefined && {
-          nama: { $regex: key, $options: "i" },
+          where: { nama: { [Op.substring]: key } },
         }),
       });
       return super.responseWithPagination(
         res,
         200,
         null,
-        data,
+        rows.map((e) => ({
+          ...e.dataValues,
+          syarat: JSON.parse(e.dataValues.syarat),
+        })),
         count,
         Math.ceil(count / parseInt(limit)),
         parseInt(parseInt(page))

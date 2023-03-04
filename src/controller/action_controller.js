@@ -1,11 +1,12 @@
 const { default: jwtDecode } = require("jwt-decode");
+const { Op } = require("sequelize");
 const action = require("../../models").action;
 const Client = require("./client");
 
 class Action extends Client {
   async create(req, res) {
     try {
-      const checkAdmin = jwtDecode(req.cookies.token);
+      const checkAdmin = jwtDecode(req.headers.authorization);
       if (checkAdmin.role !== "admin")
         return super.response(res, 401, "invalid token");
       const body = req.body;
@@ -18,12 +19,13 @@ class Action extends Client {
   }
   async edit(req, res) {
     try {
-      const checkAdmin = jwtDecode(req.cookies.token);
+      const checkAdmin = jwtDecode(req.headers.authorization);
       if (checkAdmin.role !== "admin")
         return super.response(res, 401, "invalid token");
       const { id } = req.params;
-      const data = await action.findByIdAndUpdate(id, { $set: req.body });
+      const data = await action.findByPk(id);
       if (!data) return super.response(res, 404, "data tidak ditemukan");
+      await action.update(req.body, { where: { id } });
       return super.response(res, 200);
     } catch (er) {
       console.log(er);
@@ -32,12 +34,13 @@ class Action extends Client {
   }
   async delete(req, res) {
     try {
-      const checkAdmin = jwtDecode(req.cookies.token);
+      const checkAdmin = jwtDecode(req.headers.authorization);
       if (checkAdmin.role !== "admin")
         return super.response(res, 401, "invalid token");
       const { id } = req.params;
-      const data = await action.findByIdAndDelete(id);
+      const data = await action.findByPk(id);
       if (!data) return super.response(res, 404, "data tidak ditemukan");
+      await action.destroy({ where: { id } });
       return super.response(res, 200);
     } catch (er) {
       console.log(er);
@@ -48,47 +51,27 @@ class Action extends Client {
     try {
       const { page, limit, key } = req.query;
       const size = (parseInt(page) - 1) * parseInt(limit);
-      const checkAdmin = jwtDecode(req.cookies.token);
+      const checkAdmin = jwtDecode(req.headers.authorization);
       if (checkAdmin.role !== "admin")
         return super.response(res, 401, "invalid token");
-      const pagination = [];
-      const pipeline = [
-        { $match: { action_name: { $regex: new RegExp(key, "i") } } },
-        {
-          $project: {
-            action_name: 1,
-            description: 1,
-          },
-        },
-        {
-          $facet: {
-            data: pagination,
-            total: [{ $count: "count" }],
-          },
-        },
-      ];
-      if (page !== undefined && limit !== undefined) {
-        pagination.push(
-          {
-            $skip: size,
-          },
-          {
-            $limit: parseInt(limit),
-          }
-        );
-      }
-      const data = await action.aggregate(pipeline);
+      const { count, rows } = await action.findAndCountAll({
+        attributes:["id","action_name"],
+        ...(page !== undefined &&
+          limit !== undefined && {
+            offset: size,
+            limit: parseInt(limit),
+          }),
+        ...(key !== undefined && {
+          where: { action_name: {[Op.substring]:key} },
+        }),
+      });
       return super.responseWithPagination(
         res,
         200,
         null,
-        data[0].data,
-        data[0].total.length === 0 ? 0 : data[0].total[0].count,
-        Math.ceil(
-          data[0].total.length === 0
-            ? 0
-            : data[0].total[0].count / parseInt(limit)
-        ),
+        rows,
+        count,
+        Math.ceil(count / parseInt(limit)),
         parseInt(parseInt(page))
       );
     } catch (er) {

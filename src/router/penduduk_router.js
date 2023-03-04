@@ -15,7 +15,7 @@ router.post(
   validatorMiddleware,
   penduduk_controller.register
 );
-router.get("/total-penduduk", penduduk_controller.totalPenduduk);
+// router.get("/total-penduduk", penduduk_controller.totalPenduduk);
 router.use(jwtMiddleware);
 router.put(
   "/edit/:id",
