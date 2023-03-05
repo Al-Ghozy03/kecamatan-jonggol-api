@@ -4,16 +4,12 @@ const {
 } = require('sequelize');
 module.exports = (sequelize, DataTypes) => {
   class sarana_keagamaan extends Model {
-    /**
-     * Helper method for defining associations.
-     * This method is not a part of Sequelize lifecycle.
-     * The `models/index` file will call this method automatically.
-     */
     static associate(models) {
-      // define association here
+      sarana_keagamaan.belongsTo(models.desa,{foreignKey:"id_desa"})
     }
   }
   sarana_keagamaan.init({
+    nama_sarana: DataTypes.STRING,
     pimpinan: DataTypes.STRING,
     alamat: DataTypes.STRING,
     keterangan: DataTypes.STRING,
