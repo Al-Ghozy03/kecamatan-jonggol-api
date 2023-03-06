@@ -15,7 +15,8 @@ module.exports = (sequelize, DataTypes) => {
   }
   ormas.init({
     nama_ormas: DataTypes.STRING,
-    kepanjangan: DataTypes.STRING
+    kepanjangan: DataTypes.STRING,
+    slug: DataTypes.STRING,
   }, {
     sequelize,
     modelName: 'ormas',

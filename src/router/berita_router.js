@@ -6,7 +6,7 @@ const beritaCreateValidator = require("../validator/berita_validator");
 const router = require("express")();
 
 router.get("/", berita_controller.get);
-router.get("/:id", berita_controller.detail);
+router.get("/:slug", berita_controller.detail);
 router.use(jwtMiddleware);
 router.post(
   "/create",
@@ -15,7 +15,7 @@ router.post(
   validatorMiddleware,
   berita_controller.create
 );
-router.delete("/delete/:id", berita_controller.delete);
-router.put("/edit/:id", upload.single("thumbnail"), berita_controller.edit);
+router.delete("/delete/:slug", berita_controller.delete);
+router.put("/edit/:slug", upload.single("thumbnail"), berita_controller.edit);
 
 module.exports = { berita_router: router };

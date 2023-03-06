@@ -9,12 +9,13 @@ module.exports = (sequelize, DataTypes) => {
      */
     static associate(models) {
       // define association here
-      album.hasOne(models.galeri, { as: "cover",foreignKey:"id_album" });
+      album.hasOne(models.galeri, { as: "cover", foreignKey: "id_album" });
     }
   }
   album.init(
     {
       nama_album: DataTypes.STRING,
+      slug: DataTypes.STRING,
     },
     {
       sequelize,

@@ -5,6 +5,7 @@ const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 const { default: jwtDecode } = require("jwt-decode");
 const { Op } = require("sequelize");
+const convert = require("./convert");
 require("dotenv").config();
 
 class Penduduk extends Client {
@@ -16,6 +17,7 @@ class Penduduk extends Client {
       const checkDesa = await desa.findByPk(body.id_desa);
       if (!checkDesa) return super.response(res, 400, "desa tidak ditemukan");
       body.password = await bcrypt.hashSync(body.password, 12);
+      body.slug = convert.toSlug(body.nama);
       const data = await penduduk.create(body);
       const token = jwt.sign(
         { id: data.id, role: "penduduk" },
@@ -24,7 +26,6 @@ class Penduduk extends Client {
           expiresIn: "1d",
         }
       );
-      res.cookie("token", token, { httpOnly: true, maxAge: 60 * 60 * 24 * 7 });
       return super.responseWithToken(res, 200, null, null, token);
     } catch (er) {
       console.log(er);
@@ -35,7 +36,7 @@ class Penduduk extends Client {
     try {
       const { nik, password } = req.body;
       const check = await penduduk.findOne({ where: { nik } });
-      if (!check) super.response(res, 404, "nik tidak ditemukan");
+      if (!check)return super.response(res, 404, "nik tidak ditemukan");
       const verify = await bcrypt.compareSync(password, check.password);
       if (!verify) return super.response(res, 401, "password salah");
       const token = jwt.sign(
@@ -43,7 +44,6 @@ class Penduduk extends Client {
         process.env.JWT_SIGN,
         { expiresIn: "1d" }
       );
-      res.cookie("token", token, { httpOnly: true, maxAge: 60 * 60 * 24 * 7 });
       return super.responseWithToken(res, 200, null, null, token);
     } catch (er) {
       console.log(er);
@@ -52,10 +52,10 @@ class Penduduk extends Client {
   }
   async edit(req, res) {
     try {
-      const { id } = req.params;
-      const check = await penduduk.findByPk(id);
+      const { slug } = req.params;
+      const check = await penduduk.findOne({ where: { slug } });
       if (!check) return super.response(res, 404, "penduduk tidak ditemukan");
-      await penduduk.update(req.body, { where: { id } });
+      await penduduk.update(req.body, { where: { slug } });
       return super.response(res, 200);
     } catch (er) {
       console.log(er);
@@ -71,8 +71,8 @@ class Penduduk extends Client {
       const size = (parseInt(page) - 1) * parseInt(limit);
       const { count, rows } = await penduduk.findAndCountAll({
         attributes: [
-          "id",
           "nama",
+          "slug",
           "alamat",
           "rt",
           "rw",
@@ -141,11 +141,12 @@ class Penduduk extends Client {
   }
   async detail(req, res) {
     try {
-      const { id } = req.params;
-      const data = await penduduk.findByPk(id, {
+      const { slug } = req.params;
+      const data = await penduduk.findOne({
+        where: { slug },
         attributes: [
-          "id",
           "nama",
+          "slug",
           "alamat",
           "rt",
           "rw",
@@ -181,8 +182,13 @@ class Penduduk extends Client {
         ],
         include: {
           model: desa,
-          as: "desa",
-          attributes: ["nama_desa", "kepala_desa"],
+          attributes: [
+            "nama_desa",
+            "kepala_desa",
+            "slug",
+            "longtitude",
+            "latitude",
+          ],
         },
       });
       if (!data) return super.response(res, 404, "penduduk tidak ditemukan");
@@ -191,15 +197,6 @@ class Penduduk extends Client {
       return super.response(res, 500, er);
     }
   }
-  // async totalPenduduk(req, res) {
-  //   try {
-  //     const total = await penduduk.countDocuments();
-  //     return super.response(res, 200, null, { total });
-  //   } catch (er) {
-  //     console.log(er);
-  //     return super.response(res, 500, er);
-  //   }
-  // }
 }
 
 module.exports = new Penduduk();

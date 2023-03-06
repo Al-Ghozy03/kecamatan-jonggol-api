@@ -3,6 +3,7 @@ const galeri = require("../../models").galeri;
 const album = require("../../models").album;
 const Client = require("./client");
 const cloudinary_controller = require("./cloudinary_controller");
+const convert = require("./convert");
 
 class Galeri extends Client {
   async create(req, res) {
@@ -24,6 +25,7 @@ class Galeri extends Client {
         );
         body.thumbnail = secure_url;
         body.id_thumbnail = public_id;
+        body.slug = convert.toSlug(body.nama);
         await galeri.create(body);
         return super.response(res, 200);
       }
@@ -39,14 +41,14 @@ class Galeri extends Client {
   }
   async delete(req, res) {
     try {
-      const { id } = req.params;
+      const { slug } = req.params;
       const checkAdmin = jwtDecode(req.headers.authorization);
       if (checkAdmin.role !== "admin")
         return super.response(res, 401, "invalid token");
-      const check = await galeri.findByPk(id);
+      const check = await galeri.findOne({ where: { slug } });
       if (!check) return super.response(res, 404, "data tidak ditemukan");
       cloudinary_controller.delete(check.id_thumbnail);
-      await galeri.destroy({ where: { id } });
+      await galeri.destroy({ where: { slug } });
       return super.response(res, 200);
     } catch (er) {
       return super.response(res, 500, er);
@@ -54,12 +56,12 @@ class Galeri extends Client {
   }
   async edit(req, res) {
     try {
-      const { id } = req.params;
+      const { slug } = req.params;
       const body = req.body;
       const checkAdmin = jwtDecode(req.headers.authorization);
       if (checkAdmin.role !== "admin")
         return super.response(res, 401, "invalid token");
-      const check = await galeri.findByPk(id);
+      const check = await galeri.findOne({ where: { slug } });
       if (!check) return super.response(res, 404, "data tidak ditemukan");
       if (body.id_album !== undefined) {
         const checkAlbum = await galeri.findByPk(body.id_album);
@@ -90,7 +92,10 @@ class Galeri extends Client {
           );
         }
       }
-      await galeri.update(body, { where: { id } });
+      if (body.nama !== undefined) {
+        body.slug = convert.toSlug(body.nama);
+      }
+      await galeri.update(body, { where: { slug } });
       return super.response(res, 200);
     } catch (er) {
       console.log(er);
@@ -102,6 +107,7 @@ class Galeri extends Client {
       const { id_album, page, limit } = req.query;
       const size = (parseInt(page) - 1) * parseInt(limit);
       const { rows, count } = await galeri.findAndCountAll({
+        attributes: ["slug", "nama", "thumbnail", "slug"],
         ...(page !== undefined &&
           limit !== undefined && {
             offset: size,
@@ -127,8 +133,11 @@ class Galeri extends Client {
   }
   async detail(req, res) {
     try {
-      const { id } = req.params;
-      const data = await galeri.findByPk(id);
+      const { slug } = req.params;
+      const data = await galeri.findOne({
+        where: { slug },
+        attributes: ["slug", "nama", "deskripsi", "thumbnail", "createdAt"],
+      });
       if (!data) return super.response(res, 404, "data tidak ditemukan");
       return super.response(res, 200, null, data);
     } catch (er) {

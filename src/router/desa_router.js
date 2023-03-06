@@ -12,8 +12,8 @@ router.post(
   desa_controller.create
 );
 
-router.put("/edit/:id", desa_controller.edit);
-router.delete("/delete/:id", desa_controller.delete);
+router.put("/edit/:slug", desa_controller.edit);
+router.delete("/delete/:slug", desa_controller.delete);
 router.get("/", desa_controller.get);
 
 module.exports = { desa_router: router };

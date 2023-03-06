@@ -15,15 +15,14 @@ router.post(
   validatorMiddleware,
   penduduk_controller.register
 );
-// router.get("/total-penduduk", penduduk_controller.totalPenduduk);
 router.use(jwtMiddleware);
 router.put(
-  "/edit/:id",
+  "/edit/:slug",
   pendudukEditValidator,
   validatorMiddleware,
   penduduk_controller.edit
 );
 router.get("/", penduduk_controller.get);
-router.get("/:id", penduduk_controller.detail);
+router.get("/:slug", penduduk_controller.detail);
 
 module.exports = { penduduk_router: router };

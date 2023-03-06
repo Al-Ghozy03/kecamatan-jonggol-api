@@ -16,7 +16,8 @@ module.exports = (sequelize, DataTypes) => {
     nama_desa: DataTypes.STRING,
     kepala_desa: DataTypes.STRING,
     longtitude: DataTypes.STRING,
-    latitude: DataTypes.STRING
+    latitude: DataTypes.STRING,
+    slug: DataTypes.STRING,
   }, {
     sequelize,
     modelName: 'desa',

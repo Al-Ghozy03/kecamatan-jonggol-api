@@ -3,6 +3,7 @@ const { Op } = require("sequelize");
 const layanan = require("../../models").layanan;
 const Client = require("./client");
 const cloudinary_controller = require("./cloudinary_controller");
+const convert = require("./convert");
 
 class Layanan extends Client {
   async create(req, res) {
@@ -20,6 +21,7 @@ class Layanan extends Client {
         await cloudinary_controller.postDocument(req.file, "template");
       body.template = secure_url;
       body.id_template = public_id;
+      body.slug = convert.toSlug(body.nama);
       await layanan.create(body);
       return super.response(res, 200);
     } catch (er) {
@@ -33,9 +35,9 @@ class Layanan extends Client {
       if (checkAdmin.role !== "admin")
         return super.response(res, 401, "invalid token");
       const body = req.body;
-      const { id } = req.params;
-      const data = await layanan.findByPk(id);
-      if (!data) super.response(res, 404, "layanan tidak ditemukan");
+      const { slug } = req.params;
+      const data = await layanan.findOne({ where: { slug } });
+      if (!data) return super.response(res, 404, "layanan tidak ditemukan");
       if (req?.file?.path === undefined) {
         body.template = data.template;
         body.id_template = data.id_template;
@@ -51,7 +53,10 @@ class Layanan extends Client {
         body.template = secure_url;
         body.id_template = public_id;
       }
-      await layanan.update(body, { where: { id } });
+      if (body.nama !== undefined) {
+        body.slug = convert.toSlug(body.nama);
+      }
+      await layanan.update(body, { where: { slug } });
       return super.response(res, 200, null);
     } catch (er) {
       console.log(er);
@@ -60,11 +65,11 @@ class Layanan extends Client {
   }
   async delete(req, res) {
     try {
-      const { id } = req.params;
-      const check = await layanan.findByPk(id);
+      const { slug } = req.params;
+      const check = await layanan.findOne({ where: { slug } });
       if (!check) return super.response(res, 404, "layanan tidak ditemukan");
       await cloudinary_controller.delete(check.id_template);
-      await layanan.destroy({ where: { id } });
+      await layanan.destroy({ where: { slug } });
       return super.response(res, 200);
     } catch (er) {
       console.log(er);
@@ -76,7 +81,7 @@ class Layanan extends Client {
       const { page, limit, key } = req.query;
       const size = (parseInt(page) - 1) * parseInt(limit);
       const { rows, count } = await layanan.findAndCountAll({
-        attributes: ["id", "nama", "syarat", "template"],
+        attributes: ["slug", "nama", "syarat", "template"],
         ...(page !== undefined &&
           limit !== undefined && {
             offset: size,
@@ -101,6 +106,23 @@ class Layanan extends Client {
     } catch (er) {
       console.log(er);
       super.responseWithPagination(res, 500, er);
+    }
+  }
+  async detail(req, res) {
+    try {
+      const { slug } = req.params;
+      const data = await layanan.findOne({
+        where: { slug },
+        attributes: ["slug", "nama", "syarat", "template"],
+      });
+      if (!data) return super.response(res, 404, "data tidak ditemukan");
+      return super.response(res, 200, null, {
+        ...data.dataValues,
+        syarat: JSON.parse(data.syarat),
+      });
+    } catch (er) {
+      console.log(er);
+      super.response(res, 500, er);
     }
   }
 }

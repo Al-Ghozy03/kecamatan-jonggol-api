@@ -12,8 +12,8 @@ router.post(
   sarana_keagamaan_controller.create
 );
 
-router.put("/edit/:id", sarana_keagamaan_controller.edit);
-router.delete("/delete/:id", sarana_keagamaan_controller.delete);
+router.put("/edit/:slug", sarana_keagamaan_controller.edit);
+router.delete("/delete/:slug", sarana_keagamaan_controller.delete);
 router.get("/", sarana_keagamaan_controller.get);
 
 module.exports = { sarana_keagamaan_router: router };

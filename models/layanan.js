@@ -17,7 +17,8 @@ module.exports = (sequelize, DataTypes) => {
     nama: DataTypes.STRING,
     syarat: DataTypes.STRING,
     template: DataTypes.STRING,
-    id_template: DataTypes.STRING
+    id_template: DataTypes.STRING,
+    slug: DataTypes.STRING,
   }, {
     sequelize,
     modelName: 'layanan',

@@ -19,7 +19,8 @@ module.exports = (sequelize, DataTypes) => {
     bentuk_pendidikan: DataTypes.STRING,
     status: DataTypes.STRING,
     alamat: DataTypes.STRING,
-    id_desa: DataTypes.INTEGER
+    id_desa: DataTypes.INTEGER,
+    slug: DataTypes.STRING,
   }, {
     sequelize,
     modelName: 'sekolah',

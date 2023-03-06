@@ -1,5 +1,6 @@
 "use strict";
 const bcrypt = require("bcrypt");
+const convert = require("../src/controller/convert");
 /** @type {import('sequelize-cli').Migration} */
 module.exports = {
   async up(queryInterface, Sequelize) {
@@ -9,6 +10,7 @@ module.exports = {
         username: "admin jonggol",
         password: bcrypt.hashSync("adminjonggol123", 10),
         id_role: 1,
+        slug: convert.toSlug("admin jonggol"),
       },
     ]);
   },

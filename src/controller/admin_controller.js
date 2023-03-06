@@ -59,10 +59,6 @@ class Admin extends Client {
         process.env.JWT_SIGN,
         { expiresIn: "1d" }
       );
-      res.cookie("token", token, {
-        httpOnly: true,
-        maxAge: 60 * 60 * 24 * 30000,
-      });
       return super.responseWithToken(res, 200, null, data, token);
     } catch (er) {
       console.log(er);
@@ -77,7 +73,7 @@ class Admin extends Client {
       if (checkAdmin.role !== "admin")
         return super.response(res, 401, "invalid token");
       const { count, rows } = await admin.findAndCountAll({
-        attributes: ["id", "email", "username"],
+        attributes: ["slug", "email", "username"],
         ...(page !== undefined &&
           limit !== undefined && {
             limit: parseInt(limit),

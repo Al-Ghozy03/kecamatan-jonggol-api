@@ -6,7 +6,7 @@ const galeriCreateValidator = require("../validator/galeri_validator");
 const router = require("express")();
 
 router.get("/", galeri_controller.get);
-router.get("/:id", galeri_controller.detail);
+router.get("/:slug", galeri_controller.detail);
 router.use(jwtMiddleware);
 router.post(
   "/create",
@@ -15,7 +15,7 @@ router.post(
   validatorMiddleware,
   galeri_controller.create
 );
-router.delete("/delete/:id", galeri_controller.delete);
-router.put("/edit/:id", upload.single("thumbnail"), galeri_controller.edit);
+router.delete("/delete/:slug", galeri_controller.delete);
+router.put("/edit/:slug", upload.single("thumbnail"), galeri_controller.edit);
 
 module.exports = { galeri_router: router };

@@ -1,8 +1,8 @@
 const { default: jwtDecode } = require("jwt-decode");
-const { Op } = require("sequelize");
 const saranakeagamaan = require("../../models").sarana_keagamaan;
 const desa = require("../../models").desa;
 const Client = require("./client");
+const convert = require("./convert");
 
 class SaranaKeagamaan extends Client {
   async create(req, res) {
@@ -13,6 +13,7 @@ class SaranaKeagamaan extends Client {
       const body = req.body;
       const checkDesa = await desa.findByPk(body.id_desa);
       if (!checkDesa) return super.response(res, 404, "desa tidak ditemukan");
+      body.slug = convert.toSlug(body.nama_sarana)
       saranakeagamaan.create(body);
       return super.response(res, 200);
     } catch (er) {
@@ -25,14 +26,17 @@ class SaranaKeagamaan extends Client {
       const checkAdmin = jwtDecode(req.headers.authorization);
       if (checkAdmin.role !== "admin")
         return super.response(res, 401, "invalid token");
-      const { id } = req.params;
-      const data = await saranakeagamaan.findByPk(id);
+      const { slug } = req.params;
+      const data = await saranakeagamaan.findOne({ where: { slug } })
       if (!data) return super.response(res, 404, "data tidak ditemukan");
       if (req.body.id_desa !== undefined) {
         const checkDesa = await desa.findByPk(req.body.id_desa);
         if (!checkDesa) return super.response(res, 404, "desa tidak ditemukan");
       }
-      await saranakeagamaan.update(req.body, { where: { id } });
+      if(req.body.nama_sarana!== undefined){
+        req.body.slug = convert.toSlug(req.body.nama_sarana)
+      }
+      await saranakeagamaan.update(req.body, { where: { slug } });
       return super.response(res, 200);
     } catch (er) {
       console.log(er);
@@ -44,10 +48,10 @@ class SaranaKeagamaan extends Client {
       const checkAdmin = jwtDecode(req.headers.authorization);
       if (checkAdmin.role !== "admin")
         return super.response(res, 401, "invalid token");
-      const { id } = req.params;
-      const data = await saranakeagamaan.findByPk(id);
+      const { slug } = req.params;
+      const data = await saranakeagamaan.findOne({ where: { slug } })
       if (!data) return super.response(res, 404, "data tidak ditemukan");
-      await saranakeagamaan.destroy({ where: { id } });
+      await saranakeagamaan.destroy({ where: { slug } });
       return super.response(res, 200);
     } catch (er) {
       console.log(er);
@@ -68,7 +72,7 @@ class SaranaKeagamaan extends Client {
             offset: size,
             limit: parseInt(limit),
           }),
-        attributes: ["id", "nama_sarana", "pimpinan", "keterangan", "alamat"],
+        attributes: ["slug", "nama_sarana", "pimpinan", "keterangan", "alamat"],
         include: {
           model: desa,
           attributes: ["nama_desa", "kepala_desa", "longtitude", "latitude"],

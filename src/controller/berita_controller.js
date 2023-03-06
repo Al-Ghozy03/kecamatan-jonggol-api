@@ -4,6 +4,7 @@ const berita = require("../../models").berita;
 const admin = require("../../models").admin;
 const Client = require("./client");
 const cloudinary_controller = require("./cloudinary_controller");
+const convert = require("./convert");
 
 class Berita extends Client {
   async create(req, res) {
@@ -24,6 +25,7 @@ class Berita extends Client {
         body.id_admin = jwtDecode(req.headers.authorization).id;
         body.thumbnail = secure_url;
         body.id_thumbnail = public_id;
+        body.slug = convert.toSlug(body.judul);
         await berita.create(body);
         return super.response(res, 200);
       }
@@ -39,14 +41,14 @@ class Berita extends Client {
   }
   async delete(req, res) {
     try {
-      const { id } = req.params;
+      const { slug } = req.params;
       const checkAdmin = jwtDecode(req.headers.authorization);
       if (checkAdmin.role !== "admin")
         return super.response(res, 401, "invalid token");
-      const check = await berita.findByPk(id);
+      const check = await berita.findOne({ where: { slug } });
       if (!check) return super.response(res, 404, "data tidak ditemukan");
       await cloudinary_controller.delete(check.id_thumbnail);
-      await berita.destroy({ where: { id } });
+      await berita.destroy({ where: { slug } });
       return super.response(res, 200);
     } catch (er) {
       return super.response(res, 500, er);
@@ -54,12 +56,12 @@ class Berita extends Client {
   }
   async edit(req, res) {
     try {
-      const { id } = req.params;
+      const { slug } = req.params;
       const body = req.body;
       const checkAdmin = jwtDecode(req.headers.authorization);
       if (checkAdmin.role !== "admin")
         return super.response(res, 401, "invalid token");
-      const check = await berita.findByPk(id);
+      const check = await berita.findOne({ where: { slug } });
       if (!check) return super.response(res, 404, "data tidak ditemukan");
       if (req?.file?.path === undefined) {
         body.thumbnail = check.thumbnail;
@@ -77,6 +79,9 @@ class Berita extends Client {
           );
           body.thumbnail = secure_url;
           body.id_thumbnail = public_id;
+          if (body.judul !== undefined) {
+            body.slug = convert.toSlug(body.judul);
+          }
         } else {
           return super.response(
             res,
@@ -85,7 +90,10 @@ class Berita extends Client {
           );
         }
       }
-      await berita.update(body, { where: { id } });
+      if (body.judul !== undefined) {
+        body.slug = convert.toSlug(body.judul);
+      }
+      await berita.update(body, { where: { slug } });
       return super.response(res, 200);
     } catch (er) {
       console.log(er);
@@ -97,6 +105,7 @@ class Berita extends Client {
       const { page, limit, key, sort } = req.query;
       const size = (parseInt(page) - 1) * parseInt(limit);
       const { rows, count } = await berita.findAndCountAll({
+        attributes: ["slug", "judul", "konten", "thumbnail"],
         ...(sort !== undefined && {
           order: [["createdAt", sort === "terbaru" ? "DESC" : "ASC"]],
         }),
@@ -130,9 +139,10 @@ class Berita extends Client {
   }
   async detail(req, res) {
     try {
-      const { id } = req.params;
+      const { slug } = req.params;
       const data = await berita.findOne({
-        where: { id },
+        attributes: ["slug", "judul", "konten", "thumbnail"],
+        where: { slug },
         include: {
           model: admin,
           as: "author",

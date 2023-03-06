@@ -28,7 +28,8 @@ module.exports = (sequelize, DataTypes) => {
     pendudukan: DataTypes.STRING,
     alamat: DataTypes.STRING,
     email: DataTypes.STRING,
-    pass_foto: DataTypes.STRING
+    pass_foto: DataTypes.STRING,
+    slug: DataTypes.STRING,
   }, {
     sequelize,
     modelName: 'pegawai',

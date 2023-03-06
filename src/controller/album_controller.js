@@ -2,6 +2,7 @@ const { default: jwtDecode } = require("jwt-decode");
 const album = require("../../models").album;
 const galeri = require("../../models").galeri;
 const Client = require("./client");
+const convert = require("./convert");
 
 class Album extends Client {
   async create(req, res) {
@@ -10,6 +11,7 @@ class Album extends Client {
       if (checkAdmin.role !== "admin")
         return super.response(res, 401, "invalid token");
       const body = req.body;
+      body.slug = convert.toSlug(body.nama_album);
       album.create(body);
       return super.response(res, 200);
     } catch (er) {
@@ -22,12 +24,13 @@ class Album extends Client {
       const checkAdmin = jwtDecode(req.headers.authorization);
       if (checkAdmin.role !== "admin")
         return super.response(res, 401, "invalid token");
-      const { id } = req.params;
-      const data = await album.findByPk(id);
+      const { slug } = req.params;
+      const data = await album.findOne({ where: { slug } });
       if (!data) return super.response(res, 404, "data tidak ditemukan");
+      req.body.slug = convert.toSlug(req.body.nama_album)
       await album.update(
         { nama_album: req.body.nama_album },
-        { where: { id } }
+        { where: { slug } }
       );
       return super.response(res, 200);
     } catch (er) {
@@ -40,10 +43,10 @@ class Album extends Client {
       const checkAdmin = jwtDecode(req.headers.authorization);
       if (checkAdmin.role !== "admin")
         return super.response(res, 401, "invalid token");
-      const { id } = req.params;
-      const data = await album.findByPk(id);
+      const { slug } = req.params;
+      const data = await album.findOne({ where: { slug } })
       if (!data) return super.response(res, 404, "data tidak ditemukan");
-      await album.destroy({ where: { id } });
+      await album.destroy({ where: { slug } });
       return super.response(res, 200);
     } catch (er) {
       console.log(er);
@@ -55,6 +58,7 @@ class Album extends Client {
       const { page, limit } = req.query;
       const size = (parseInt(page) - 1) * parseInt(limit);
       const { rows, count } = await album.findAndCountAll({
+        attributes:["id","slug","nama_album"],
         ...(page !== undefined &&
           limit !== undefined && {
             offset: size,

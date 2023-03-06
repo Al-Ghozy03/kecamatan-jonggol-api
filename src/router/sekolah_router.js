@@ -12,8 +12,8 @@ router.post(
   ormas_controller.create
 );
 
-router.put("/edit/:id", ormas_controller.edit);
-router.delete("/delete/:id", ormas_controller.delete);
+router.put("/edit/:slug", ormas_controller.edit);
+router.delete("/delete/:slug", ormas_controller.delete);
 router.get("/", ormas_controller.get);
 
 module.exports = { sekolah_router: router };

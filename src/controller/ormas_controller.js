@@ -1,6 +1,7 @@
 const { default: jwtDecode } = require("jwt-decode");
 const ormas = require("../../models").ormas;
 const Client = require("./client");
+const convert = require("./convert");
 
 class Ormas extends Client {
   async create(req, res) {
@@ -9,6 +10,7 @@ class Ormas extends Client {
       if (checkAdmin.role !== "admin")
         return super.response(res, 401, "invalid token");
       const body = req.body;
+      body.slug = convert.toSlug(body.nama_ormas);
       ormas.create(body);
       return super.response(res, 200);
     } catch (er) {
@@ -21,10 +23,13 @@ class Ormas extends Client {
       const checkAdmin = jwtDecode(req.headers.authorization);
       if (checkAdmin.role !== "admin")
         return super.response(res, 401, "invalid token");
-      const { id } = req.params;
-      const data = await ormas.findByPk(id);
+      const { slug } = req.params;
+      const data = await ormas.findOne({ where: { slug } });
       if (!data) return super.response(res, 404, "data tidak ditemukan");
-      await ormas.update(req.body, { where: { id } });
+      if (req.body.nama_ormas !== undefined) {
+        req.body.slug = convert.toSlug(req.body.nama_ormas);
+      }
+      await ormas.update(req.body, { where: { slug } });
       return super.response(res, 200);
     } catch (er) {
       console.log(er);
@@ -36,10 +41,10 @@ class Ormas extends Client {
       const checkAdmin = jwtDecode(req.headers.authorization);
       if (checkAdmin.role !== "admin")
         return super.response(res, 401, "invalid token");
-      const { id } = req.params;
-      const data = await ormas.findByPk(id);
+      const { slug } = req.params;
+      const data = await ormas.findOne({ where: { slug } })
       if (!data) return super.response(res, 404, "data tidak ditemukan");
-      await ormas.destroy({ where: { id } });
+      await ormas.destroy({ where: { slug } });
       return super.response(res, 200);
     } catch (er) {
       console.log(er);
@@ -55,6 +60,7 @@ class Ormas extends Client {
       if (checkAdmin.role !== "admin")
         return super.response(res, 401, "invalid token");
       const { count, rows } = await ormas.findAndCountAll({
+        attributes:["slug","nama_ormas","kepanjangan"],
         ...(page !== undefined &&
           limit !== undefined && {
             offset: size,

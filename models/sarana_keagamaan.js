@@ -13,7 +13,8 @@ module.exports = (sequelize, DataTypes) => {
     pimpinan: DataTypes.STRING,
     alamat: DataTypes.STRING,
     keterangan: DataTypes.STRING,
-    id_desa: DataTypes.INTEGER
+    id_desa: DataTypes.INTEGER,
+    slug: DataTypes.STRING,
   }, {
     sequelize,
     modelName: 'sarana_keagamaan',

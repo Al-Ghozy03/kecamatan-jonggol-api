@@ -17,11 +17,12 @@ router.post(
   layanan_controller.create
 );
 router.put(
-  "/edit/:id",
+  "/edit/:slug",
   upload.single("template"),
   layanan_controller.edit
 );
-router.delete("/delete/:id", layanan_controller.delete);
+router.delete("/delete/:slug", layanan_controller.delete);
 router.get("/", layanan_controller.get);
+router.get("/:slug", layanan_controller.detail);
 
 module.exports = { layanan_router: router };

@@ -17,7 +17,7 @@ module.exports = (sequelize, DataTypes) => {
     nomor_perdes: DataTypes.STRING,
     tanggal_perdes: DataTypes.DATEONLY,
     keterangan: DataTypes.STRING,
-    id_desa: DataTypes.INTEGER
+    id_desa: DataTypes.INTEGER,
   }, {
     sequelize,
     modelName: 'bumd',

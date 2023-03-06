@@ -3,6 +3,7 @@ const { Op } = require("sequelize");
 const sekolah = require("../../models").sekolah;
 const desamodel = require("../../models").desa;
 const Client = require("./client");
+const convert = require("./convert");
 
 class Sekolah extends Client {
   async create(req, res) {
@@ -13,6 +14,7 @@ class Sekolah extends Client {
       const body = req.body;
       const checkDesa = await desamodel.findByPk(body.id_desa);
       if (!checkDesa) return super.response(res, 404, "desa tidak ditemukan");
+      body.slug = convert.toSlug(body.nama_sekolah)
       sekolah.create(body);
       return super.response(res, 200);
     } catch (er) {
@@ -25,14 +27,17 @@ class Sekolah extends Client {
       const checkAdmin = jwtDecode(req.headers.authorization);
       if (checkAdmin.role !== "admin")
         return super.response(res, 401, "invalid token");
-      const { id } = req.params;
-      const data = await sekolah.findByPk(id);
+      const { slug } = req.params;
+      const data = await sekolah.findOne({ where: { slug } })
       if (!data) return super.response(res, 404, "data tidak ditemukan");
       if (req.body.id_desa !== undefined) {
         const checkDesa = await desamodel.findByPk(req.body.id_desa);
         if (!checkDesa) return super.response(res, 404, "desa tidak ditemukan");
       }
-      await sekolah.update(req.body, { where: { id } });
+      if (req.body.nama_sekolah !== undefined) {
+        req.body.slug = convert.toSlug(req.body.nama_sekolah)
+      }
+      await sekolah.update(req.body, { where: { slug } });
       return super.response(res, 200);
     } catch (er) {
       console.log(er);
@@ -44,10 +49,10 @@ class Sekolah extends Client {
       const checkAdmin = jwtDecode(req.headers.authorization);
       if (checkAdmin.role !== "admin")
         return super.response(res, 401, "invalid token");
-      const { id } = req.params;
-      const data = await sekolah.findByPk(id);
+      const { slug } = req.params;
+      const data = await sekolah.findOne({ where: { slug } })
       if (!data) return super.response(res, 404, "data tidak ditemukan");
-      await sekolah.destroy({ where: { id } });
+      await sekolah.destroy({ where: { slug } });
       return super.response(res, 200);
     } catch (er) {
       console.log(er);
@@ -65,7 +70,7 @@ class Sekolah extends Client {
         return super.response(res, 401, "invalid token");
       const { count, rows } = await sekolah.findAndCountAll({
         attributes: [
-          "id",
+          "slug",
           "nama_sekolah",
           "npsn",
           "bentuk_pendidikan",

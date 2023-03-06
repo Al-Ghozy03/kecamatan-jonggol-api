@@ -18,6 +18,7 @@ module.exports = (sequelize, DataTypes) => {
       thumbnail: DataTypes.STRING,
       id_thumbnail: DataTypes.STRING,
       id_admin: DataTypes.INTEGER,
+      slug: DataTypes.STRING,
     },
     {
       sequelize,

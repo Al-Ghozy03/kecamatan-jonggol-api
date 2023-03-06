@@ -13,7 +13,7 @@ router.post(
   album_controller.create
 );
 
-router.put("/edit/:id", album_controller.edit);
-router.delete("/delete/:id", album_controller.delete);
+router.put("/edit/:slug", album_controller.edit);
+router.delete("/delete/:slug", album_controller.delete);
 
 module.exports = { album_router: router };
