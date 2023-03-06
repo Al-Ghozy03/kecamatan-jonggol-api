@@ -16,6 +16,7 @@ const { umkm_router } = require("./umkm_router");
 const { sarana_keagamaan_router } = require("./sarana_keagamaan_router");
 const { ormas_router } = require("./ormas_router");
 const { sekolah_router } = require("./sekolah_router");
+const { pegawai_router } = require("./pegawai_router");
 const router = require("express")();
 
 router.use("/auth", auth_router);
@@ -36,6 +37,7 @@ router.use("/umkm", umkm_router);
 router.use("/sarana-keagamaan", sarana_keagamaan_router);
 router.use("/ormas", ormas_router);
 router.use("/sekolah", sekolah_router);
+router.use("/pegawai", pegawai_router);
 router.all("*", (req, res) =>
   res.status(404).json({ code: 404, message: "route not found" })
 );

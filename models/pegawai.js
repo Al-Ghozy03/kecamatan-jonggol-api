@@ -25,11 +25,12 @@ module.exports = (sequelize, DataTypes) => {
     status_kawin: DataTypes.STRING,
     jabatan: DataTypes.STRING,
     pangkat: DataTypes.STRING,
-    pendudukan: DataTypes.STRING,
+    pendidikan: DataTypes.STRING,
     alamat: DataTypes.STRING,
     email: DataTypes.STRING,
     pass_foto: DataTypes.STRING,
     slug: DataTypes.STRING,
+    id_foto: DataTypes.STRING,
   }, {
     sequelize,
     modelName: 'pegawai',
