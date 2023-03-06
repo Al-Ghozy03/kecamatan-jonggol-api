@@ -102,7 +102,7 @@ class Berita extends Client {
       const { page, limit, key, sort } = req.query;
       const size = (parseInt(page) - 1) * parseInt(limit);
       const { rows, count } = await berita.findAndCountAll({
-        attributes: ["slug", "judul", "konten", "thumbnail"],
+        attributes: ["slug", "judul", "konten", "thumbnail","createdAt"],
         ...(sort !== undefined && {
           order: [["createdAt", sort === "terbaru" ? "DESC" : "ASC"]],
         }),
@@ -138,7 +138,7 @@ class Berita extends Client {
     try {
       const { slug } = req.params;
       const data = await berita.findOne({
-        attributes: ["slug", "judul", "konten", "thumbnail"],
+        attributes: ["slug", "judul", "konten", "thumbnail","createdAt"],
         where: { slug },
         include: {
           model: admin,

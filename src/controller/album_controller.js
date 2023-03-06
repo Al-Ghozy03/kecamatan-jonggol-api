@@ -58,7 +58,7 @@ class Album extends Client {
       const { page, limit } = req.query;
       const size = (parseInt(page) - 1) * parseInt(limit);
       const { rows, count } = await album.findAndCountAll({
-        attributes:["id","slug","nama_album"],
+        attributes:["id","slug","nama_album","createdAt"],
         ...(page !== undefined &&
           limit !== undefined && {
             offset: size,
