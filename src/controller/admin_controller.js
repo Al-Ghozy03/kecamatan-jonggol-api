@@ -55,7 +55,7 @@ class Admin extends Client {
       const verify = await bcrypt.compareSync(password, check.password);
       if (!verify) return super.responseWithToken(res, 400, "password salah");
       const token = jwt.sign(
-        { id: check.id, role: "admin" },
+        { id: check.id, slug: check.slug, role: "admin" },
         process.env.JWT_SIGN,
         { expiresIn: "1d" }
       );

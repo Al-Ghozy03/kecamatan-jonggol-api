@@ -20,7 +20,7 @@ class Penduduk extends Client {
       body.slug = convert.toSlug(body.nama);
       const data = await penduduk.create(body);
       const token = jwt.sign(
-        { id: data.id, role: "penduduk" },
+        { id: data.id, slug: data.slug, role: "penduduk" },
         process.env.JWT_SIGN,
         {
           expiresIn: "1d",
@@ -36,11 +36,11 @@ class Penduduk extends Client {
     try {
       const { nik, password } = req.body;
       const check = await penduduk.findOne({ where: { nik } });
-      if (!check)return super.response(res, 404, "nik tidak ditemukan");
+      if (!check) return super.response(res, 404, "nik tidak ditemukan");
       const verify = await bcrypt.compareSync(password, check.password);
       if (!verify) return super.response(res, 401, "password salah");
       const token = jwt.sign(
-        { id: check.id, role: "penduduk" },
+        { id: check.id, slug: check.slug, role: "penduduk" },
         process.env.JWT_SIGN,
         { expiresIn: "1d" }
       );

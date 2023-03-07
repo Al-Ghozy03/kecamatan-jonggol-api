@@ -54,13 +54,9 @@ async function authme(req, res) {
     if (er?.message === "invalid signature") {
       return res.status(401).json({ message: "invalid token", token: null });
     }
-    const { id, role } = jwtDecode(token);
-    const newToken = jwt.sign({ id, role }, process.env.JWT_SIGN, {
+    const { id, role, slug } = jwtDecode(token);
+    const newToken = jwt.sign({ id, slug, role }, process.env.JWT_SIGN, {
       expiresIn: "1d",
-    });
-    res.cookie("token", newToken, {
-      httpOnly: true,
-      maxAge: 60 * 60 * 24 * 7,
     });
     return res.status(200).json({ message: "success", token: newToken });
   });
