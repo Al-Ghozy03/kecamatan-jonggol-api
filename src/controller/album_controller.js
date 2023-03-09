@@ -64,7 +64,7 @@ class Album extends Client {
             offset: size,
             limit: parseInt(limit),
           }),
-        include: { model: galeri, as: "cover" },
+        include: { model: galeri, as: "cover",attributes:["slug","thumbnail"] },
       });
       return super.responseWithPagination(
         res,
