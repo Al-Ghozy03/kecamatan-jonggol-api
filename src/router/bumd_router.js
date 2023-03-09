@@ -4,6 +4,7 @@ const validatorMiddleware = require("../middleware/validator_middleware");
 const bumdCreateValidator = require("../validator/bumd_validator");
 const router = require("express")();
 
+router.get("/total",bumd_controller.total)
 router.use(jwtMiddleware);
 router.post(
   "/create",

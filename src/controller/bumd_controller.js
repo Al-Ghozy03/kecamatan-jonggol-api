@@ -75,6 +75,18 @@ class Bumd extends Client {
       return super.response(res, 500, er);
     }
   }
+  async total(req, res) {
+    try {
+      const { id_desa } = req.query;
+      const { count } = await bumd.findAndCountAll({
+        ...(id_desa !== undefined && { where: { id_desa } }),
+      });
+      return super.response(res, 200, null, count);
+    } catch (er) {
+      console.log(er);
+      return super.response(res, 500, er);
+    }
+  }
 }
 
 module.exports = new Bumd();

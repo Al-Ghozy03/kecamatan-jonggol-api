@@ -1,16 +1,18 @@
 const { default: jwtDecode } = require("jwt-decode");
 const { Op } = require("sequelize");
-const pegawai = require("../../models").pegawai;
+const potensi_desa = require("../../models").potensi_desa;
+const desa = require("../../models").desa;
+const penduduk = require("../../models").penduduk;
 const Client = require("./client");
 const cloudinary_controller = require("./cloudinary_controller");
 const convert = require("./convert");
 
-class Pegawai extends Client {
+class PotensiDesa extends Client {
   async create(req, res) {
     try {
       const body = req.body;
       const checkAdmin = jwtDecode(req.headers.authorization);
-      if (checkAdmin.role !== "admin")
+      if (checkAdmin.role !== "penduduk")
         return super.response(res, 401, "invalid token");
       if (
         req.file.mimetype === "image/png" ||
@@ -19,12 +21,15 @@ class Pegawai extends Client {
       ) {
         const { secure_url, public_id } = await cloudinary_controller.post(
           req.file.path,
-          "pegawai"
+          "potensi desa"
         );
-        body.pass_foto = secure_url;
-        body.id_foto = public_id;
-        body.slug = convert.toSlug(body.nama);
-        await pegawai.create(body);
+        const checkDesa = await desa.findByPk(body.id_desa);
+        if (!checkDesa) return super.response(res, 404, "desa tidak ditemukan");
+        body.id_penduduk = jwtDecode(req.headers.authorization).id;
+        body.thumbnail = secure_url;
+        body.id_thumbnail = public_id;
+        body.slug = convert.toSlug(body.nama_potensi);
+        await potensi_desa.create(body);
         return super.response(res, 200);
       }
       return super.response(
@@ -43,10 +48,10 @@ class Pegawai extends Client {
       const checkAdmin = jwtDecode(req.headers.authorization);
       if (checkAdmin.role !== "admin")
         return super.response(res, 401, "invalid token");
-      const check = await pegawai.findOne({ where: { slug } });
+      const check = await potensi_desa.findOne({ where: { slug } });
       if (!check) return super.response(res, 404, "data tidak ditemukan");
-      await cloudinary_controller.delete(check.id_foto);
-      await pegawai.destroy({ where: { slug } });
+      await cloudinary_controller.delete(check.id_thumbnail);
+      await potensi_desa.destroy({ where: { slug } });
       return super.response(res, 200);
     } catch (er) {
       return super.response(res, 500, er);
@@ -59,24 +64,24 @@ class Pegawai extends Client {
       const checkAdmin = jwtDecode(req.headers.authorization);
       if (checkAdmin.role !== "admin")
         return super.response(res, 401, "invalid token");
-      const check = await pegawai.findOne({ where: { slug } });
+      const check = await potensi_desa.findOne({ where: { slug } });
       if (!check) return super.response(res, 404, "data tidak ditemukan");
       if (req?.file?.path === undefined) {
-        body.pass_foto = check.pass_foto;
-        body.id_foto = check.id_foto;
+        body.thumbnail = check.thumbnail;
+        body.id_thumbnail = check.id_thumbnail;
       } else {
         if (
           req.file.mimetype === "image/png" ||
           req.file.mimetype === "image/jpeg" ||
           req.file.mimetype === "image/jpg"
         ) {
-          await cloudinary_controller.delete(check.id_foto);
+          await cloudinary_controller.delete(check.id_thumbnail);
           const { public_id, secure_url } = await cloudinary_controller.post(
             req.file.path,
-            "pegawai"
+            "potensi desa"
           );
-          body.pass_foto = secure_url;
-          body.id_foto = public_id;
+          body.thumbnail = secure_url;
+          body.id_thumbnail = public_id;
         } else {
           return super.response(
             res,
@@ -85,10 +90,10 @@ class Pegawai extends Client {
           );
         }
       }
-      if (body.nama !== undefined) {
-        body.slug = convert.toSlug(body.nama);
+      if (body.nama_potensi !== undefined) {
+        body.slug = convert.toSlug(body.nama_potensi);
       }
-      await pegawai.update(body, { where: { slug } });
+      await potensi_desa.update(body, { where: { slug } });
       return super.response(res, 200);
     } catch (er) {
       console.log(er);
@@ -97,38 +102,35 @@ class Pegawai extends Client {
   }
   async get(req, res) {
     try {
-      const { page, limit, key, status } = req.query;
+      const { page, limit, key } = req.query;
       const size = (parseInt(page) - 1) * parseInt(limit);
-      const { rows, count } = await pegawai.findAndCountAll({
+      const { rows, count } = await potensi_desa.findAndCountAll({
         attributes: [
           "slug",
-          "nama",
-          "email",
-          "tempat_lahir",
-          "tanggal_lahir",
-          "status",
-          "no_ktp",
-          "no_hp",
-          "jenis_kelamin",
-          "agama",
-          "status_kawin",
-          "jabatan",
-          "pangkat",
-          "pendidikan",
-          "alamat",
-          "pass_foto",
+          "nama_potensi",
+          "kategori",
+          "deskripsi",
+          "thumbnail",
+          "createdAt",
         ],
         ...(page !== undefined &&
           limit !== undefined && {
             offset: size,
             limit: parseInt(limit),
           }),
-        where: {
-          ...(key !== undefined && {
-            nama: { [Op.substring]: key },
-          }),
-          ...(status !== undefined && { status }),
-        },
+        ...(key !== undefined && {
+          where: { nama_potensi: { [Op.substring]: key } },
+        }),
+        include: [
+          {
+            model: penduduk,
+            attributes: ["nama", "nik", "alamat"],
+          },
+          {
+            model: desa,
+            attributes: ["nama_desa", "kepala_desa", "longtitude", "latitude"],
+          },
+        ],
       });
       return super.responseWithPagination(
         res,
@@ -147,26 +149,26 @@ class Pegawai extends Client {
   async detail(req, res) {
     try {
       const { slug } = req.params;
-      const data = await pegawai.findOne({
+      const data = await potensi_desa.findOne({
         attributes: [
           "slug",
-          "nama",
-          "email",
-          "tempat_lahir",
-          "tanggal_lahir",
-          "status",
-          "no_ktp",
-          "no_hp",
-          "jenis_kelamin",
-          "agama",
-          "status_kawin",
-          "jabatan",
-          "pangkat",
-          "pendidikan",
-          "alamat",
-          "pass_foto",
+          "nama_potensi",
+          "kategori",
+          "deskripsi",
+          "thumbnail",
+          "createdAt",
         ],
         where: { slug },
+        include: [
+          {
+            model: penduduk,
+            attributes: ["nama", "nik", "alamat"],
+          },
+          {
+            model: desa,
+            attributes: ["nama_desa", "kepala_desa", "longtitude", "latitude"],
+          },
+        ],
       });
       if (!data) return super.response(res, 404, "data tidak ditemukan");
       return super.response(res, 200, null, data);
@@ -175,18 +177,6 @@ class Pegawai extends Client {
       return super.response(res, 500, er);
     }
   }
-  async total(req, res) {
-    try {
-      const { status } = req.query;
-      const { count } = await pegawai.findAndCountAll({
-        ...(status !== undefined && { where: { status } }),
-      });
-      return super.response(res, 200, null, count);
-    } catch (er) {
-      console.log(er);
-      return super.response(res, 500, er);
-    }
-  }
 }
 
-module.exports = new Pegawai();
+module.exports = new PotensiDesa();

@@ -15,6 +15,7 @@ router.post(
   validatorMiddleware,
   penduduk_controller.register
 );
+router.get("/total", penduduk_controller.total);
 router.use(jwtMiddleware);
 router.put(
   "/edit/:slug",

@@ -5,6 +5,7 @@ const validatorMiddleware = require("../middleware/validator_middleware");
 const pegawaiCreateValidator = require("../validator/pegawai_validator");
 const router = require("express")();
 
+router.get("/total",pegawai_controller.total)
 router.use(jwtMiddleware);
 router.get("/", pegawai_controller.get);
 router.get("/:slug", pegawai_controller.detail);

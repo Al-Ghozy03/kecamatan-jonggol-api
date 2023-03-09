@@ -14,7 +14,7 @@ class Sekolah extends Client {
       const body = req.body;
       const checkDesa = await desamodel.findByPk(body.id_desa);
       if (!checkDesa) return super.response(res, 404, "desa tidak ditemukan");
-      body.slug = convert.toSlug(body.nama_sekolah)
+      body.slug = convert.toSlug(body.nama_sekolah);
       sekolah.create(body);
       return super.response(res, 200);
     } catch (er) {
@@ -28,14 +28,14 @@ class Sekolah extends Client {
       if (checkAdmin.role !== "admin")
         return super.response(res, 401, "invalid token");
       const { slug } = req.params;
-      const data = await sekolah.findOne({ where: { slug } })
+      const data = await sekolah.findOne({ where: { slug } });
       if (!data) return super.response(res, 404, "data tidak ditemukan");
       if (req.body.id_desa !== undefined) {
         const checkDesa = await desamodel.findByPk(req.body.id_desa);
         if (!checkDesa) return super.response(res, 404, "desa tidak ditemukan");
       }
       if (req.body.nama_sekolah !== undefined) {
-        req.body.slug = convert.toSlug(req.body.nama_sekolah)
+        req.body.slug = convert.toSlug(req.body.nama_sekolah);
       }
       await sekolah.update(req.body, { where: { slug } });
       return super.response(res, 200);
@@ -50,7 +50,7 @@ class Sekolah extends Client {
       if (checkAdmin.role !== "admin")
         return super.response(res, 401, "invalid token");
       const { slug } = req.params;
-      const data = await sekolah.findOne({ where: { slug } })
+      const data = await sekolah.findOne({ where: { slug } });
       if (!data) return super.response(res, 404, "data tidak ditemukan");
       await sekolah.destroy({ where: { slug } });
       return super.response(res, 200);
@@ -80,7 +80,9 @@ class Sekolah extends Client {
         where: {
           ...(status !== undefined && { status }),
           ...(bentuk_pendidikan !== undefined && { bentuk_pendidikan }),
-          ...(nama_sekolah !== undefined && { nama_sekolah:{[Op.substring]:nama_sekolah} }),
+          ...(nama_sekolah !== undefined && {
+            nama_sekolah: { [Op.substring]: nama_sekolah },
+          }),
         },
         ...(page !== undefined &&
           limit !== undefined && {
@@ -107,6 +109,20 @@ class Sekolah extends Client {
     } catch (er) {
       console.log(er);
       return super.responseWithPagination(res, 500, er);
+    }
+  }
+  async total(req, res) {
+    try {
+      const { bentuk_pendidikan } = req.query;
+      const { count } = await sekolah.findAndCountAll({
+        ...(bentuk_pendidikan !== undefined && {
+          where: { id_desa: bentuk_pendidikan },
+        }),
+      });
+      return super.response(res, 200, null, count);
+    } catch (er) {
+      console.log(er);
+      return super.response(res, 500, er);
     }
   }
 }
