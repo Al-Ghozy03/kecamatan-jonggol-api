@@ -10,7 +10,7 @@ module.exports = (sequelize, DataTypes) => {
      * The `models/index` file will call this method automatically.
      */
     static associate(models) {
-      // define association here
+      agenda.belongsTo(models.desa,{foreignKey:"id_desa"})
     }
   }
   agenda.init({
@@ -21,8 +21,9 @@ module.exports = (sequelize, DataTypes) => {
     tempat: DataTypes.STRING,
     deskripsi: DataTypes.STRING,
     thumbnail: DataTypes.STRING,
-    id_template: DataTypes.STRING,
-    id_desa: DataTypes.INTEGER
+    id_thumbnail: DataTypes.STRING,
+    id_desa: DataTypes.INTEGER,
+    slug: DataTypes.STRING,
   }, {
     sequelize,
     modelName: 'agenda',

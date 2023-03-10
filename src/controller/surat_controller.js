@@ -31,17 +31,18 @@ class Surat extends Client {
       const checkPenduduk = await penduduk.findByPk(
         jwtDecode(req.headers.authorization).id
       );
-      const checkLayanan = await layanan.findByPk(req.body.id_layanan);
+      const checkLayanan = await layanan.findByPk(body.id_layanan);
       if (!checkPenduduk)
         return super.response(res, 404, "penduduk tidak ditemukan");
       if (!checkLayanan)
         return super.response(res, 404, "layanan tidak ditemukan");
-      const checkDesa = await desa.findByPk(checkPenduduk.id_desa);
-      body.kepala_desa = checkDesa.id;
+      const checkDesa = await desa.findByPk(body.id_desa);
+      if (!checkDesa) return super.response(res, 404, "desa tidak ditemukan");
+      body.id_desa = checkDesa.id;
       body.id_penduduk = jwtDecode(req.headers.authorization).id;
       body.bulan = month[date.getMonth()];
       body.tahun = date.getFullYear();
-      body.nomor_surat = crypto.randomInt(0, 1000);
+      body.nomor_surat = crypto.randomInt(0, 100000);
       await surat.create(body);
       return super.response(res, 200);
     } catch (er) {
@@ -58,179 +59,58 @@ class Surat extends Client {
         nomor_surat,
         bulan,
         tahun,
-        nama,
-        layanan,
-        desa,
+        id_layanan,
+        id_desa,
       } = req.query;
       const size = (parseInt(page) - 1) * parseInt(limit);
-      const pagination = [];
-      const pipeline = [
-        {
-          $match: {
-            ...(status !== undefined && { status }),
-            ...(nomor_surat !== undefined && {
-              nomor_surat: parseInt(nomor_surat),
-            }),
-            ...(bulan !== undefined && { bulan }),
-            ...(tahun !== undefined && { tahun }),
-          },
+      const { count, rows } = await surat.findAndCountAll({
+        attributes: ["nomor_surat", "bulan", "tahun", "status", "createdAt"],
+        ...(page !== undefined &&
+          limit !== undefined && {
+            limit: parseInt(limit),
+            offset: size,
+          }),
+        where: {
+          ...(id_desa !== undefined && { id_desa }),
+          ...(id_layanan !== undefined && { id_layanan }),
+          ...(tahun !== undefined && { tahun }),
+          ...(bulan !== undefined && { bulan }),
+          ...(nomor_surat !== undefined && { nomor_surat }),
+          ...(status !== undefined && { status }),
         },
-        {
-          $lookup: {
-            from: "penduduks",
-            localField: "id_penduduk",
-            foreignField: "_id",
-            as: "pembuat",
-            pipeline: [
-              { $project: { nama: 1, nik: 1, id_desa: 1 } },
-              {
-                $match: {
-                  ...(nama !== undefined && {
-                    nama: { $regex: nama, $options: "i" },
-                  }),
-                  ...(desa !== undefined && {
-                    id_desa: mongoose.Types.ObjectId(desa),
-                  }),
-                },
-              },
-            ],
-          },
-        },
-        { $unwind: "$pembuat" },
-
-        {
-          $lookup: {
-            from: "layanans",
-            localField: "id_layanan",
-            foreignField: "_id",
-            as: "layanan",
-            pipeline: [
-              { $project: { nama: 1, syarat: 1, template: 1 } },
-              {
-                $match: {
-                  ...(layanan !== undefined && {
-                    nama: { $regex: layanan, $options: "i" },
-                  }),
-                },
-              },
-            ],
-          },
-        },
-        { $unwind: "$layanan" },
-        {
-          $lookup: {
-            from: "desas",
-            localField: "kepala_desa",
-            foreignField: "_id",
-            as: "kepala_desa",
-            pipeline: [{ $project: { nama_desa: 1, kepala_desa: 1, _id: 0 } }],
-          },
-        },
-        { $unwind: "$kepala_desa" },
-        {
-          $project: {
-            nomor_surat: 1,
-            bulan: 1,
-            tahun: 1,
-            status: 1,
-            pembuat: 1,
-            layanan: 1,
-            kepala_desa: 1,
-            createdAt: 1,
-          },
-        },
-        {
-          $facet: {
-            data: pagination,
-            total: [{ $count: "count" }],
-          },
-        },
-      ];
-      if (page !== undefined && limit !== undefined) {
-        pagination.push(
+        include: [
           {
-            $skip: size,
+            model: penduduk,
+            attributes: ["nama", "nik", "alamat"],
           },
           {
-            $limit: parseInt(limit),
-          }
-        );
-      }
-      const data = await surat.aggregate(pipeline);
+            model: desa,
+            attributes: ["nama_desa", "kepala_desa", "longtitude", "latitude"],
+          },
+          {
+            model: layanan,
+            attributes: ["nama", "syarat"],
+          },
+        ],
+      });
       return super.responseWithPagination(
         res,
         200,
         null,
-        data[0].data,
-        data[0].total.length === 0 ? 0 : data[0].total[0].count,
-        Math.ceil(
-          data[0].total.length === 0
-            ? 0
-            : data[0].total[0].count / parseInt(limit)
-        ),
+        rows.map((e) => ({
+          ...e.dataValues,
+          layanan: {
+            nama: e.dataValues.layanan.nama,
+            syarat: JSON.parse(e.dataValues.layanan.syarat),
+          },
+        })),
+        count,
+        Math.ceil(count / parseInt(limit)),
         parseInt(parseInt(page))
       );
     } catch (er) {
       console.log(er);
       return super.responseWithPagination(res, 500, er, null);
-    }
-  }
-  async detail(req, res) {
-    try {
-      const { id } = req.params;
-      const data = await surat.aggregate([
-        {
-          $match: { _id: mongoose.Types.ObjectId(id) },
-        },
-        {
-          $lookup: {
-            from: "penduduks",
-            localField: "id_penduduk",
-            foreignField: "_id",
-            as: "pembuat",
-            pipeline: [{ $project: { nama: 1, nik: 1, id_desa: 1 } }],
-          },
-        },
-        { $unwind: "$pembuat" },
-
-        {
-          $lookup: {
-            from: "layanans",
-            localField: "id_layanan",
-            foreignField: "_id",
-            as: "layanan",
-            pipeline: [{ $project: { nama: 1, syarat: 1, template: 1 } }],
-          },
-        },
-        { $unwind: "$layanan" },
-        {
-          $lookup: {
-            from: "desas",
-            localField: "kepala_desa",
-            foreignField: "_id",
-            as: "kepala_desa",
-            pipeline: [{ $project: { nama_desa: 1, kepala_desa: 1, _id: 0 } }],
-          },
-        },
-        { $unwind: "$kepala_desa" },
-        {
-          $project: {
-            nomor_surat: 1,
-            bulan: 1,
-            tahun: 1,
-            status: 1,
-            pembuat: 1,
-            layanan: 1,
-            kepala_desa: 1,
-            createdAt: 1,
-          },
-        },
-      ]);
-      if (!data[0]) return super.response(res, 404, "data tidak ditemukan");
-      return super.response(res, 200, null, data[0]);
-    } catch (er) {
-      console.log(er);
-      return super.response(res, 500, er);
     }
   }
   async edit(req, res) {
@@ -240,9 +120,12 @@ class Surat extends Client {
         return super.response(res, 401, "invalid token");
       const { id } = req.params;
       const body = req.body;
-      const check = await surat.findById(id);
+      const check = await surat.findOne({ where: { nomor_surat: id } });
       if (!check) return super.response(res, 404, "surat tidak ditemukan");
-      await surat.updateOne({ _id: id }, { $set: { status: body.status } });
+      await surat.update(
+        { status: body.status },
+        { where: { nomor_surat: id } }
+      );
       return super.response(res, 200);
     } catch (er) {
       console.log(er);
@@ -251,16 +134,26 @@ class Surat extends Client {
   }
   async delete(req, res) {
     try {
+      const checkAdmin = jwtDecode(req.headers.authorization);
       if (checkAdmin.role !== "admin")
         return super.response(res, 401, "invalid token");
       const { id } = req.params;
-      const check = await surat.findById(id);
+      const check = await surat.findOne({ where: { nomor_surat: id } });
       if (!check) return super.response(res, 404, "surat tidak ditemukan");
-      await surat.deleteOne({ _id: id });
+      await surat.destroy({ where: { nomor_surat: id } });
       return super.response(res, 200);
     } catch (er) {
       console.log(er);
       return super.response(res, 500, er);
+    }
+  }
+  async total(req,res){
+    try {
+      const {count} = await surat.findAndCountAll()
+      return super.response(res,200,null,count)
+    } catch (er) {
+      console.log(er);
+      return super.response(res,500,er)
     }
   }
 }

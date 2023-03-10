@@ -19,7 +19,8 @@ module.exports = {
         type: Sequelize.STRING
       },
       status: {
-        type: Sequelize.ENUM("diproses","ditolak","diterima")
+        type: Sequelize.ENUM("diproses","ditolak","diterima"),
+        defaultValue:"diproses"
       },
       id_penduduk: {
         type: Sequelize.INTEGER,

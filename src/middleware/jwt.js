@@ -10,12 +10,8 @@ async function jwtMiddleware(req, res, next) {
   const token = authorization.split(" ")[1];
   jwt.verify(token, process.env.JWT_SIGN, async (err, decode) => {
     if (err) {
-      if (err.message === "jwt expired")
-        return res.status(401).json({
-          message: "token expired",
-        });
       return res.status(401).json({
-        message: "invalid token",
+        message: err.message,
       });
     } else {
       try {
