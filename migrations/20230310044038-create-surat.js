@@ -12,14 +12,14 @@ module.exports = {
       nomor_surat: {
         type: Sequelize.STRING
       },
-      bulang: {
+      bulan: {
         type: Sequelize.STRING
       },
       tahun: {
         type: Sequelize.STRING
       },
       status: {
-        type: Sequelize.ENUM
+        type: Sequelize.ENUM("diproses","ditolak","diterima")
       },
       id_penduduk: {
         type: Sequelize.INTEGER,

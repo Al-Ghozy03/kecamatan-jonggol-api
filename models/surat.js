@@ -15,9 +15,9 @@ module.exports = (sequelize, DataTypes) => {
   }
   surat.init({
     nomor_surat: DataTypes.STRING,
-    bulang: DataTypes.STRING,
+    bulan: DataTypes.STRING,
     tahun: DataTypes.STRING,
-    status: DataTypes.ENUM,
+    status: DataTypes.ENUM("diproses","ditolak","diterima"),
     id_penduduk: DataTypes.INTEGER,
     id_layanan: DataTypes.INTEGER,
     id_desa: DataTypes.INTEGER
