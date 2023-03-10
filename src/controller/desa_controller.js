@@ -55,7 +55,14 @@ class Desa extends Client {
   async get(req, res) {
     try {
       const data = await desa.findAll({
-        attributes: ["id", "slug", "nama_desa", "longtitude", "latitude"],
+        attributes: [
+          "id",
+          "slug",
+          "nama_desa",
+          "kepala_desa",
+          "longtitude",
+          "latitude",
+        ],
       });
       return super.response(res, 200, null, data);
     } catch (er) {

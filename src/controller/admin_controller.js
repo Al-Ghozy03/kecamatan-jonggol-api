@@ -1,4 +1,5 @@
 const admin = require("../../models").admin;
+const desa = require("../../models").desa;
 const role = require("../../models").role;
 const action = require("../../models").action;
 const roleaction = require("../../models").role_action;
@@ -12,11 +13,13 @@ require("dotenv").config();
 class Admin extends Client {
   async register(req, res) {
     try {
-      let body = req.body;
+      const body = req.body;
       const check = await admin.findOne({ where: { email: body.email } });
       const checkRole = await role.findByPk(body.id_role);
       if (check) return super.response(res, 400, "email sudah terdaftar");
       if (!checkRole) return super.response(res, 404, "role tidak ditemukan");
+      const checkDesa = await role.findByPk(body.id_desa);
+      if (!checkDesa) return super.response(res, 404, "desa tidak ditemukan");
       body.password = await bcrypt.hashSync(body.password, 10);
       await admin.create(body);
       return super.response(res, 200, null);
@@ -33,6 +36,10 @@ class Admin extends Client {
         attributes: ["email", "username"],
         where: { email },
         include: [
+          {
+            model: desa,
+            attributes: ["nama_desa", "kepala_desa", "longtitude", "latitude"],
+          },
           {
             model: role,
             as: "role",
