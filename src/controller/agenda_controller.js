@@ -104,7 +104,7 @@ class Agenda extends Client {
   }
   async get(req, res) {
     try {
-      const { page, limit, key, sort } = req.query;
+      const { page, limit, key } = req.query;
       const size = (parseInt(page) - 1) * parseInt(limit);
       const { rows, count } = await agenda.findAndCountAll({
         attributes: [

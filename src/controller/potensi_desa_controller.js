@@ -102,7 +102,7 @@ class PotensiDesa extends Client {
   }
   async get(req, res) {
     try {
-      const { page, limit, key } = req.query;
+      const { page, limit, key, id_desa } = req.query;
       const size = (parseInt(page) - 1) * parseInt(limit);
       const { rows, count } = await potensi_desa.findAndCountAll({
         attributes: [
@@ -118,9 +118,10 @@ class PotensiDesa extends Client {
             offset: size,
             limit: parseInt(limit),
           }),
-        ...(key !== undefined && {
-          where: { nama_potensi: { [Op.substring]: key } },
-        }),
+        where: {
+          ...(key !== undefined && { nama_potensi: { [Op.substring]: key } }),
+          ...(id_desa !== undefined && { id_desa }),
+        },
         include: [
           {
             model: penduduk,

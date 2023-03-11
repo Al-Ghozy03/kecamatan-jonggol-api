@@ -1,7 +1,7 @@
 const { default: jwtDecode } = require("jwt-decode");
 const { Op } = require("sequelize");
 const umkm = require("../../models").umkm;
-const desamodel = require("../../models").desa;
+const desa = require("../../models").desa;
 const penduduk = require("../../models").penduduk;
 const Client = require("./client");
 
@@ -12,7 +12,7 @@ class Umkm extends Client {
       if (checkAdmin.role !== "admin")
         return super.response(res, 401, "invalid token");
       const body = req.body;
-      const checkDesa = await desamodel.findByPk(body.id_desa);
+      const checkDesa = await desa.findByPk(body.id_desa);
       if (!checkDesa) return super.response(res, 404, "desa tidak ditemukan");
       umkm.create(body);
       return super.response(res, 200);
@@ -30,7 +30,7 @@ class Umkm extends Client {
       const data = await umkm.findByPk(id);
       if (!data) return super.response(res, 404, "data tidak ditemukan");
       if (req.body.id_desa !== undefined) {
-        const checkDesa = await desamodel.findByPk(req.body.id_desa);
+        const checkDesa = await desa.findByPk(req.body.id_desa);
         if (!checkDesa) return super.response(res, 404, "desa tidak ditemukan");
       }
       await umkm.update(req.body, { where: { id } });
@@ -57,7 +57,7 @@ class Umkm extends Client {
   }
   async get(req, res) {
     try {
-      const { page, limit, desa, jenis_produk } = req.query;
+      const { page, limit, id_desa, jenis_produk } = req.query;
       const size = (parseInt(page) - 1) * parseInt(limit);
 
       const checkAdmin = jwtDecode(req.headers.authorization);
@@ -66,6 +66,7 @@ class Umkm extends Client {
       const { count, rows } = await umkm.findAndCountAll({
         where: {
           ...(jenis_produk !== undefined && { jenis_produk }),
+          ...(id_desa !== undefined && { id_desa }),
         },
         ...(page !== undefined &&
           limit !== undefined && {
@@ -74,13 +75,8 @@ class Umkm extends Client {
           }),
         include: [
           {
-            model: desamodel,
+            model: desa,
             attributes: ["nama_desa", "kepala_desa", "longtitude", "latitude"],
-            where: {
-              ...(desa !== undefined && {
-                nama_desa: { [Op.substring]: desa },
-              }),
-            },
           },
           {
             model: penduduk,

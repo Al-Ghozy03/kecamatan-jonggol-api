@@ -56,10 +56,17 @@ class Bumd extends Client {
   }
   async get(req, res) {
     try {
+      const { page, limit } = req.query;
       const checkAdmin = jwtDecode(req.headers.authorization);
       if (checkAdmin.role !== "admin")
         return super.response(res, 401, "invalid token");
+      const size = (parseInt(page) - 1) * parseInt(limit);
       const { count, rows } = await bumd.findAndCountAll({
+        ...(page !== undefined &&
+          limit !== undefined && {
+            offset: size,
+            limit: parseInt(limit),
+          }),
         attributes: [
           "id",
           "nomor_perdes",
@@ -67,12 +74,23 @@ class Bumd extends Client {
           "keterangan",
           "id_desa",
         ],
-        include: { model: desa ,attributes:["nama_desa","kepala_desa","longtitude","latitude"]},
+        include: {
+          model: desa,
+          attributes: ["nama_desa", "kepala_desa", "longtitude", "latitude"],
+        },
       });
-      return super.response(res, 200, null, rows);
+      return super.responseWithPagination(
+        res,
+        200,
+        null,
+        rows,
+        count,
+        Math.ceil(count / parseInt(limit)),
+        parseInt(page)
+      );
     } catch (er) {
       console.log(er);
-      return super.response(res, 500, er);
+      return super.responseWithPagination(res, 500, er);
     }
   }
   async total(req, res) {

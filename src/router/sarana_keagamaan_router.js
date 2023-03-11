@@ -4,6 +4,7 @@ const validatorMiddleware = require("../middleware/validator_middleware");
 const saranaKeagamaanCreateValidator = require("../validator/saranan_keagamaan_validator");
 const router = require("express")();
 
+router.get("/", sarana_keagamaan_controller.get);
 router.use(jwtMiddleware);
 router.post(
   "/create",
@@ -14,6 +15,5 @@ router.post(
 
 router.put("/edit/:slug", sarana_keagamaan_controller.edit);
 router.delete("/delete/:slug", sarana_keagamaan_controller.delete);
-router.get("/", sarana_keagamaan_controller.get);
 
 module.exports = { sarana_keagamaan_router: router };

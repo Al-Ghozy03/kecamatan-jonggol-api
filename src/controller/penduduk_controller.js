@@ -20,7 +20,12 @@ class Penduduk extends Client {
       body.slug = convert.toSlug(body.nama);
       const data = await penduduk.create(body);
       const token = jwt.sign(
-        { id: data.id, slug: data.slug, role: "penduduk" },
+        {
+          id: data.id,
+          slug: data.slug,
+          id_desa: data.id_desa,
+          role: "penduduk",
+        },
         process.env.JWT_SIGN,
         {
           expiresIn: "1d",
@@ -40,7 +45,12 @@ class Penduduk extends Client {
       const verify = await bcrypt.compareSync(password, check.password);
       if (!verify) return super.response(res, 401, "password salah");
       const token = jwt.sign(
-        { id: check.id, slug: check.slug, role: "penduduk" },
+        {
+          id: check.id,
+          slug: check.slug,
+          id_desa: check.id_desa,
+          role: "penduduk",
+        },
         process.env.JWT_SIGN,
         { expiresIn: "1d" }
       );

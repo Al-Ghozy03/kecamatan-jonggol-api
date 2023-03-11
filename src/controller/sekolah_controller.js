@@ -1,7 +1,7 @@
 const { default: jwtDecode } = require("jwt-decode");
 const { Op } = require("sequelize");
 const sekolah = require("../../models").sekolah;
-const desamodel = require("../../models").desa;
+const desa = require("../../models").desa;
 const Client = require("./client");
 const convert = require("./convert");
 
@@ -12,7 +12,7 @@ class Sekolah extends Client {
       if (checkAdmin.role !== "admin")
         return super.response(res, 401, "invalid token");
       const body = req.body;
-      const checkDesa = await desamodel.findByPk(body.id_desa);
+      const checkDesa = await desa.findByPk(body.id_desa);
       if (!checkDesa) return super.response(res, 404, "desa tidak ditemukan");
       body.slug = convert.toSlug(body.nama_sekolah);
       sekolah.create(body);
@@ -31,7 +31,7 @@ class Sekolah extends Client {
       const data = await sekolah.findOne({ where: { slug } });
       if (!data) return super.response(res, 404, "data tidak ditemukan");
       if (req.body.id_desa !== undefined) {
-        const checkDesa = await desamodel.findByPk(req.body.id_desa);
+        const checkDesa = await desa.findByPk(req.body.id_desa);
         if (!checkDesa) return super.response(res, 404, "desa tidak ditemukan");
       }
       if (req.body.nama_sekolah !== undefined) {
@@ -62,7 +62,7 @@ class Sekolah extends Client {
   async get(req, res) {
     try {
       const checkAdmin = jwtDecode(req.headers.authorization);
-      const { page, limit, desa, status, bentuk_pendidikan, nama_sekolah } =
+      const { page, limit, id_desa, status, bentuk_pendidikan, nama_sekolah } =
         req.query;
       const size = (parseInt(page) - 1) * parseInt(limit);
 
@@ -80,6 +80,7 @@ class Sekolah extends Client {
         where: {
           ...(status !== undefined && { status }),
           ...(bentuk_pendidikan !== undefined && { bentuk_pendidikan }),
+          ...(id_desa !== undefined && { id_desa }),
           ...(nama_sekolah !== undefined && {
             nama_sekolah: { [Op.substring]: nama_sekolah },
           }),
@@ -90,11 +91,8 @@ class Sekolah extends Client {
             limit: parseInt(limit),
           }),
         include: {
-          model: desamodel,
+          model: desa,
           attributes: ["nama_desa", "kepala_desa", "longtitude", "latitude"],
-          ...(desa !== undefined && {
-            where: { nama_desa: { [Op.substring]: desa } },
-          }),
         },
       });
       return super.responseWithPagination(

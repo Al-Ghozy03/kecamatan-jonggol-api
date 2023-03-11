@@ -13,7 +13,7 @@ class SaranaKeagamaan extends Client {
       const body = req.body;
       const checkDesa = await desa.findByPk(body.id_desa);
       if (!checkDesa) return super.response(res, 404, "desa tidak ditemukan");
-      body.slug = convert.toSlug(body.nama_sarana)
+      body.slug = convert.toSlug(body.nama_sarana);
       saranakeagamaan.create(body);
       return super.response(res, 200);
     } catch (er) {
@@ -27,14 +27,14 @@ class SaranaKeagamaan extends Client {
       if (checkAdmin.role !== "admin")
         return super.response(res, 401, "invalid token");
       const { slug } = req.params;
-      const data = await saranakeagamaan.findOne({ where: { slug } })
+      const data = await saranakeagamaan.findOne({ where: { slug } });
       if (!data) return super.response(res, 404, "data tidak ditemukan");
       if (req.body.id_desa !== undefined) {
         const checkDesa = await desa.findByPk(req.body.id_desa);
         if (!checkDesa) return super.response(res, 404, "desa tidak ditemukan");
       }
-      if(req.body.nama_sarana!== undefined){
-        req.body.slug = convert.toSlug(req.body.nama_sarana)
+      if (req.body.nama_sarana !== undefined) {
+        req.body.slug = convert.toSlug(req.body.nama_sarana);
       }
       await saranakeagamaan.update(req.body, { where: { slug } });
       return super.response(res, 200);
@@ -49,7 +49,7 @@ class SaranaKeagamaan extends Client {
       if (checkAdmin.role !== "admin")
         return super.response(res, 401, "invalid token");
       const { slug } = req.params;
-      const data = await saranakeagamaan.findOne({ where: { slug } })
+      const data = await saranakeagamaan.findOne({ where: { slug } });
       if (!data) return super.response(res, 404, "data tidak ditemukan");
       await saranakeagamaan.destroy({ where: { slug } });
       return super.response(res, 200);
@@ -61,12 +61,13 @@ class SaranaKeagamaan extends Client {
   async get(req, res) {
     try {
       const checkAdmin = jwtDecode(req.headers.authorization);
-      const { page, limit } = req.query;
+      const { page, limit, id_desa } = req.query;
       const size = (parseInt(page) - 1) * parseInt(limit);
 
       if (checkAdmin.role !== "admin")
         return super.response(res, 401, "invalid token");
       const { count, rows } = await saranakeagamaan.findAndCountAll({
+        where: { ...((id_desa !== undefined) & { id_desa }) },
         ...(page !== undefined &&
           limit !== undefined && {
             offset: size,
