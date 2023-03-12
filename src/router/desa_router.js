@@ -4,6 +4,7 @@ const validatorMiddleware = require("../middleware/validator_middleware");
 const desaCreateValidator = require("../validator/desa_validator");
 const router = require("express")();
 
+router.get("/total", desa_controller.total);
 router.get("/", desa_controller.get);
 router.use(jwtMiddleware);
 router.post(

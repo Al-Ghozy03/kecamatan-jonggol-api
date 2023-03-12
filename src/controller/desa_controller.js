@@ -70,6 +70,15 @@ class Desa extends Client {
       return super.response(res, 500, er);
     }
   }
+  async total(req, res) {
+    try {
+      const { count } = await desa.findAndCountAll();
+      return super.response(res, 200, null, count);
+    } catch (er) {
+      console.log(er);
+      return super.response(res, 500, er);
+    }
+  }
 }
 
 module.exports = new Desa();

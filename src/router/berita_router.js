@@ -5,6 +5,7 @@ const validatorMiddleware = require("../middleware/validator_middleware");
 const beritaCreateValidator = require("../validator/berita_validator");
 const router = require("express")();
 
+router.get("/total", berita_controller.total);
 router.get("/", berita_controller.get);
 router.get("/:slug", berita_controller.detail);
 router.use(jwtMiddleware);
