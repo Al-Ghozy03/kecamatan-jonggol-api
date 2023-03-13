@@ -1,4 +1,5 @@
 const { default: jwtDecode } = require("jwt-decode");
+const { Op } = require("sequelize");
 const saranakeagamaan = require("../../models").sarana_keagamaan;
 const desa = require("../../models").desa;
 const Client = require("./client");
@@ -60,11 +61,14 @@ class SaranaKeagamaan extends Client {
   }
   async get(req, res) {
     try {
-      const { page, limit, id_desa } = req.query;
+      const { page, limit, id_desa, key } = req.query;
       const size = (parseInt(page) - 1) * parseInt(limit);
 
       const { count, rows } = await saranakeagamaan.findAndCountAll({
-        where: { ...((id_desa !== undefined) & { id_desa }) },
+        where: {
+          ...((id_desa !== undefined) & { id_desa }),
+          ...((key !== undefined) & { nama_sarana: { [Op.substring]: key } }),
+        },
         ...(page !== undefined &&
           limit !== undefined && {
             offset: size,
