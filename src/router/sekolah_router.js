@@ -5,6 +5,7 @@ const sekolahCreateValidator = require("../validator/sekolah_validator");
 const router = require("express")();
 
 router.get("/total",sekolah_controller.total)
+router.get("/", sekolah_controller.get);
 router.use(jwtMiddleware);
 router.post(
   "/create",
@@ -15,6 +16,5 @@ router.post(
 
 router.put("/edit/:slug", sekolah_controller.edit);
 router.delete("/delete/:slug", sekolah_controller.delete);
-router.get("/", sekolah_controller.get);
 
 module.exports = { sekolah_router: router };
