@@ -61,13 +61,13 @@ class Sekolah extends Client {
   }
   async get(req, res) {
     try {
-      const checkAdmin = jwtDecode(req.headers.authorization);
+      // const checkAdmin = jwtDecode(req.headers.authorization);
       const { page, limit, id_desa, status, bentuk_pendidikan, nama_sekolah } =
         req.query;
       const size = (parseInt(page) - 1) * parseInt(limit);
 
-      if (checkAdmin.role !== "admin")
-        return super.response(res, 401, "invalid token");
+      // if (checkAdmin.role !== "admin")
+      //   return super.response(res, 401, "invalid token");
       const { count, rows } = await sekolah.findAndCountAll({
         attributes: [
           "slug",
