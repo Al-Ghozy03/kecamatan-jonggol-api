@@ -111,11 +111,12 @@ class Sekolah extends Client {
   }
   async total(req, res) {
     try {
-      const { bentuk_pendidikan } = req.query;
+      const { bentuk_pendidikan, status } = req.query;
       const { count } = await sekolah.findAndCountAll({
-        ...(bentuk_pendidikan !== undefined && {
-          where: { id_desa: bentuk_pendidikan },
-        }),
+        where: {
+          ...(bentuk_pendidikan !== undefined && { bentuk_pendidikan }),
+          ...(status !== undefined && { status }),
+        },
       });
       return super.response(res, 200, null, count);
     } catch (er) {

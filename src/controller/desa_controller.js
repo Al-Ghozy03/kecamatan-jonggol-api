@@ -1,4 +1,5 @@
 const { default: jwtDecode } = require("jwt-decode");
+const { Op } = require("sequelize");
 const desa = require("../../models").desa;
 const Client = require("./client");
 const convert = require("./convert");
@@ -45,7 +46,7 @@ class Desa extends Client {
       const { slug } = req.params;
       const data = await desa.findOne({ where: { slug } });
       if (!data) return super.response(res, 404, "data tidak ditemukan");
-      await data.destroy({ where: { id } });
+      await data.destroy({ where: { slug } });
       return super.response(res, 200);
     } catch (er) {
       console.log(er);
@@ -54,7 +55,11 @@ class Desa extends Client {
   }
   async get(req, res) {
     try {
+      const { key } = req.query;
       const data = await desa.findAll({
+        where: {
+          ...(key !== undefined && { nama_desa: { [Op.substring]: key } }),
+        },
         attributes: [
           "id",
           "slug",
