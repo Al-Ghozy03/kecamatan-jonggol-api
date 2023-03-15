@@ -7,22 +7,32 @@ module.exports = {
       {
         id_role:1,
         id_action:1,
+        createdAt: new Date(Date.now()),
+        updatedAt: new Date(Date.now()),
       },
       {
         id_role:1,
         id_action:2,
+        createdAt: new Date(Date.now()),
+        updatedAt: new Date(Date.now()),
       },
       {
         id_role:1,
         id_action:3,
+        createdAt: new Date(Date.now()),
+        updatedAt: new Date(Date.now()),
       },
       {
         id_role:2,
         id_action:1,
+        createdAt: new Date(Date.now()),
+        updatedAt: new Date(Date.now()),
       },
       {
         id_role:3,
         id_action:1,
+        createdAt: new Date(Date.now()),
+        updatedAt: new Date(Date.now()),
       },
     ]);
   },

@@ -28,7 +28,6 @@ router.use("/auth", auth_router);
 router.use("/penduduk", penduduk_router);
 router.use("/admin", admin_router);
 router.use("/layanan", layanan_router);
-// router.use("/surat", surat_router);
 router.use("/berita", berita_router);
 router.use("/action", action_router);
 router.use("/role", role_router);

@@ -107,7 +107,7 @@ class Galeri extends Client {
       const { id_album, page, limit } = req.query;
       const size = (parseInt(page) - 1) * parseInt(limit);
       const { rows, count } = await galeri.findAndCountAll({
-        attributes: ["slug", "nama", "thumbnail", "slug"],
+        attributes: ["slug", "nama","deskripsi","thumbnail"],
         ...(page !== undefined &&
           limit !== undefined && {
             offset: size,

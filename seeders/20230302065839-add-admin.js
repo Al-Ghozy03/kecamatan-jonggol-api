@@ -11,6 +11,8 @@ module.exports = {
         password: bcrypt.hashSync("adminjonggol123", 10),
         id_role: 1,
         slug: convert.toSlug("admin jonggol"),
+        createdAt: new Date(Date.now()),
+        updatedAt: new Date(Date.now()),
       },
     ]);
   },
