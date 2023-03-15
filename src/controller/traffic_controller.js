@@ -1,7 +1,8 @@
-const { Op } = require("sequelize");
 const { Sequelize } = require("../../models");
 const Client = require("./client");
 const traffic = require("../../models").traffic;
+const penduduk = require("../../models").penduduk;
+const desa = require("../../models").desa;
 
 class Traffic extends Client {
   async create(req, res) {
@@ -15,7 +16,7 @@ class Traffic extends Client {
       return super.response(res, 500, er);
     }
   }
-  async total(req, res) {
+  async totalPengunjung(req, res) {
     try {
       const months = [
         "januari",
@@ -31,6 +32,7 @@ class Traffic extends Client {
         "november",
         "desember",
       ];
+      const total = await traffic.findAndCountAll();
       const data = [];
       for (let i = 0; i < months.length; i++) {
         const { count } = await traffic.findAndCountAll({
@@ -42,6 +44,24 @@ class Traffic extends Client {
           },
         });
         data.push({ [months[i]]: count });
+      }
+      return super.response(res, 200, null, {
+        total_pengunjung: total.count,
+        data,
+      });
+    } catch (er) {
+      console.log(er);
+    }
+  }
+  async totalPendaftar(req, res) {
+    try {
+      const data = [];
+      const datadesa = await desa.findAll();
+      for (let i = 0; i < datadesa.length; i++) {
+        const { count } = await penduduk.findAndCountAll({
+          where: { id_desa: datadesa[i].id },
+        });
+        data.push({ [datadesa[i].nama_desa]: count });
       }
       return super.response(res, 200, null, data);
     } catch (er) {
