@@ -4,6 +4,7 @@ const validatorMiddleware = require("../middleware/validator_middleware");
 const albumCreateValidator = require("../validator/album_validator");
 const router = require("express")();
 
+router.get("/:slug", album_controller.detail);
 router.get("/", album_controller.get);
 router.use(jwtMiddleware);
 router.post(

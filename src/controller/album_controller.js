@@ -27,7 +27,7 @@ class Album extends Client {
       const { slug } = req.params;
       const data = await album.findOne({ where: { slug } });
       if (!data) return super.response(res, 404, "data tidak ditemukan");
-      req.body.slug = convert.toSlug(req.body.nama_album)
+      req.body.slug = convert.toSlug(req.body.nama_album);
       await album.update(
         { nama_album: req.body.nama_album },
         { where: { slug } }
@@ -44,7 +44,7 @@ class Album extends Client {
       if (checkAdmin.role !== "admin")
         return super.response(res, 401, "invalid token");
       const { slug } = req.params;
-      const data = await album.findOne({ where: { slug } })
+      const data = await album.findOne({ where: { slug } });
       if (!data) return super.response(res, 404, "data tidak ditemukan");
       await album.destroy({ where: { slug } });
       return super.response(res, 200);
@@ -58,13 +58,17 @@ class Album extends Client {
       const { page, limit } = req.query;
       const size = (parseInt(page) - 1) * parseInt(limit);
       const { rows, count } = await album.findAndCountAll({
-        attributes:["id","slug","nama_album","createdAt"],
+        attributes: ["id", "slug", "nama_album", "createdAt"],
         ...(page !== undefined &&
           limit !== undefined && {
             offset: size,
             limit: parseInt(limit),
           }),
-        include: { model: galeri, as: "cover",attributes:["slug","thumbnail"] },
+        include: {
+          model: galeri,
+          as: "cover",
+          attributes: ["slug", "thumbnail"],
+        },
       });
       return super.responseWithPagination(
         res,
@@ -75,6 +79,25 @@ class Album extends Client {
         Math.ceil(count / parseInt(limit)),
         parseInt(parseInt(page))
       );
+    } catch (er) {
+      console.log(er);
+      return super.responseWithPagination(res, 500, er);
+    }
+  }
+  async detail(req, res) {
+    try {
+      const { slug } = req.params;
+      const data = await album.findOne({
+        where: { slug },
+        attributes: ["id", "slug", "nama_album", "createdAt"],
+        include: {
+          model: galeri,
+          as: "cover",
+          attributes: ["slug", "thumbnail"],
+        },
+      });
+      if (!data) return super.response(res, 404, "data tidak ditemukan");
+      return super.response(res, 200, null, data);
     } catch (er) {
       console.log(er);
       return super.responseWithPagination(res, 500, er);
