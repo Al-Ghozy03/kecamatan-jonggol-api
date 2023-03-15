@@ -21,6 +21,7 @@ class Layanan extends Client {
         await cloudinary_controller.postDocument(req.file, "template");
       body.template = secure_url;
       body.id_template = public_id;
+      body.syarat = JSON.stringify(body.syarat.split(","));
       body.slug = convert.toSlug(body.nama);
       await layanan.create(body);
       return super.response(res, 200);
@@ -55,6 +56,9 @@ class Layanan extends Client {
       }
       if (body.nama !== undefined) {
         body.slug = convert.toSlug(body.nama);
+      }
+      if(body.syarat!== undefined){
+        body.syarat = JSON.stringify(body.syarat.split(","))
       }
       await layanan.update(body, { where: { slug } });
       return super.response(res, 200, null);
