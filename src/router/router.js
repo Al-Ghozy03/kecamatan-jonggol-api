@@ -48,7 +48,7 @@ router.use("/agenda", agenda_router);
 router.use("/kesehatan", kesehatan_router);
 router.use("/traffic", traffic_router);
 router.use("/kontak", kontak_router);
-router.get("/", (req, res) => res.json({ code: 200, message: "welcome" }));
+router.get("/", (req, res) => res.json({ code: 200, message: "halo dek" }));
 router.all("*", (req, res) =>
   res.status(404).json({ code: 404, message: "route not found" })
 );
