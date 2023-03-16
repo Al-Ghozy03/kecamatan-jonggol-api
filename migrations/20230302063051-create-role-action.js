@@ -16,7 +16,6 @@ module.exports = {
         references: {
           model: "roles",
           key: "id",
-          as: "id_role",
         },
       },
       id_action: {
