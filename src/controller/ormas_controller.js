@@ -1,12 +1,12 @@
-const { default: jwtDecode } = require("jwt-decode");
 const ormas = require("../../models").ormas;
 const Client = require("./client");
 const convert = require("./convert");
+const jwt = require("jsonwebtoken")
 
 class Ormas extends Client {
   async create(req, res) {
     try {
-      const checkAdmin = jwtDecode(req.headers.authorization);
+      const checkAdmin = jwt.decode(req.headers.authorization.split(" ")[1]);
       if (checkAdmin.role !== "admin")
         return super.response(res, 401, "invalid token");
       const body = req.body;
@@ -20,7 +20,7 @@ class Ormas extends Client {
   }
   async edit(req, res) {
     try {
-      const checkAdmin = jwtDecode(req.headers.authorization);
+      const checkAdmin = jwt.decode(req.headers.authorization.split(" ")[1]);
       if (checkAdmin.role !== "admin")
         return super.response(res, 401, "invalid token");
       const { slug } = req.params;
@@ -38,7 +38,7 @@ class Ormas extends Client {
   }
   async delete(req, res) {
     try {
-      const checkAdmin = jwtDecode(req.headers.authorization);
+      const checkAdmin = jwt.decode(req.headers.authorization.split(" ")[1]);
       if (checkAdmin.role !== "admin")
         return super.response(res, 401, "invalid token");
       const { slug } = req.params;
@@ -53,7 +53,7 @@ class Ormas extends Client {
   }
   async get(req, res) {
     try {
-      const checkAdmin = jwtDecode(req.headers.authorization);
+      const checkAdmin = jwt.decode(req.headers.authorization.split(" ")[1]);
       const { page, limit } = req.query;
       const size = (parseInt(page) - 1) * parseInt(limit);
 

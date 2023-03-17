@@ -3,7 +3,6 @@ const desa = require("../../models").desa;
 const Client = require("./client");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
-const { default: jwtDecode } = require("jwt-decode");
 const { Op } = require("sequelize");
 const convert = require("./convert");
 require("dotenv").config();
@@ -74,7 +73,7 @@ class Penduduk extends Client {
   }
   async get(req, res) {
     try {
-      const checkAdmin = jwtDecode(req.headers.authorization);
+      const checkAdmin = jwt.decode(req.headers.authorization.split(" ")[1]);
       if (checkAdmin.role !== "admin")
         return super.response(res, 401, "invalid token");
       const { key, page, limit } = req.query;

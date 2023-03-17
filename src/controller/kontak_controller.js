@@ -1,12 +1,12 @@
-const { default: jwtDecode } = require("jwt-decode");
 const Client = require("./client");
 const convert = require("./convert");
 const kontak = require("../../models").kontak;
+const jwt = require("jsonwebtoken")
 
 class Kontak extends Client {
   async create(req, res) {
     try {
-      const checkAdmin = jwtDecode(req.headers.authorization);
+      const checkAdmin = jwt.decode(req.headers.authorization.split(" ")[1]);
       if (checkAdmin.role !== "admin")
         return super.response(res, 401, "invalid token");
       const body = req.body;
@@ -20,7 +20,7 @@ class Kontak extends Client {
   }
   async edit(req, res) {
     try {
-      const checkAdmin = jwtDecode(req.headers.authorization);
+      const checkAdmin = jwt.decode(req.headers.authorization.split(" ")[1]);
       if (checkAdmin.role !== "admin")
         return super.response(res, 401, "invalid token");
       const { slug } = req.params;
@@ -39,7 +39,7 @@ class Kontak extends Client {
   }
   async delete(req, res) {
     try {
-      const checkAdmin = jwtDecode(req.headers.authorization);
+      const checkAdmin = jwt.decode(req.headers.authorization.split(" ")[1]);
       if (checkAdmin.role !== "admin")
         return super.response(res, 401, "invalid token");
       const { slug } = req.params;

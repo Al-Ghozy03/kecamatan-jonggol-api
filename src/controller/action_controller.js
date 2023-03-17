@@ -1,12 +1,12 @@
-const { default: jwtDecode } = require("jwt-decode");
 const { Op } = require("sequelize");
 const action = require("../../models").action;
 const Client = require("./client");
+const jwt = require("jsonwebtoken")
 
 class Action extends Client {
   async create(req, res) {
     try {
-      const checkAdmin = jwtDecode(req.headers.authorization);
+      const checkAdmin = jwt.decode(req.headers.authorization.split(" ")[1]);
       if (checkAdmin.role !== "admin")
         return super.response(res, 401, "invalid token");
       const body = req.body;
@@ -19,7 +19,7 @@ class Action extends Client {
   }
   async edit(req, res) {
     try {
-      const checkAdmin = jwtDecode(req.headers.authorization);
+      const checkAdmin = jwt.decode(req.headers.authorization.split(" ")[1]);
       if (checkAdmin.role !== "admin")
         return super.response(res, 401, "invalid token");
       const { id } = req.params;
@@ -34,7 +34,7 @@ class Action extends Client {
   }
   async delete(req, res) {
     try {
-      const checkAdmin = jwtDecode(req.headers.authorization);
+      const checkAdmin = jwt.decode(req.headers.authorization.split(" ")[1]);
       if (checkAdmin.role !== "admin")
         return super.response(res, 401, "invalid token");
       const { id } = req.params;
@@ -51,7 +51,7 @@ class Action extends Client {
     try {
       const { page, limit, key } = req.query;
       const size = (parseInt(page) - 1) * parseInt(limit);
-      const checkAdmin = jwtDecode(req.headers.authorization);
+      const checkAdmin = jwt.decode(req.headers.authorization.split(" ")[1]);
       if (checkAdmin.role !== "admin")
         return super.response(res, 401, "invalid token");
       const { count, rows } = await action.findAndCountAll({

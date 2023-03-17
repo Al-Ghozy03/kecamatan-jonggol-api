@@ -1,5 +1,4 @@
 const jwt = require("jsonwebtoken");
-const { default: jwtDecode } = require("jwt-decode");
 const admin = require("../../models").admin;
 const penduduk = require("../../models").penduduk;
 
@@ -50,7 +49,9 @@ async function authme(req, res) {
     if (er?.message === "invalid signature") {
       return res.status(401).json({ message: "invalid token", token: null });
     }
-    const { id, role, slug, id_desa } = jwtDecode(token);
+
+    const { id, role, slug, id_desa } = jwt.decode(token);
+    console.log({ id, role, slug, id_desa });
     const newToken = jwt.sign(
       { id, slug, id_desa, role },
       process.env.JWT_SIGN,

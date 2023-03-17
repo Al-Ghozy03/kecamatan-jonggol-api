@@ -1,14 +1,14 @@
-const { default: jwtDecode } = require("jwt-decode");
 const role = require("../../models").role;
 const action = require("../../models").action;
 const role_action = require("../../models").role_action;
 const Client = require("./client");
+const jwt = require("jsonwebtoken")
 
 class RoleAction extends Client {
   async create(req, res) {
     try {
       const { id_role, id_action } = req.body;
-      const checkAdmin = jwtDecode(req.headers.authorization);
+      const checkAdmin = jwt.decode(req.headers.authorization.split(" ")[1]);
       if (checkAdmin.role !== "admin")
         return super.response(res, 401, "invalid token");
       const checkRole = await role.findByPk(id_role);
@@ -30,7 +30,7 @@ class RoleAction extends Client {
   }
   async edit(req, res) {
     try {
-      const checkAdmin = jwtDecode(req.headers.authorization);
+      const checkAdmin = jwt.decode(req.headers.authorization.split(" ")[1]);
       if (checkAdmin.role !== "admin")
         return super.response(res, 401, "invalid token");
       const { id } = req.params;
@@ -55,7 +55,7 @@ class RoleAction extends Client {
   }
   async delete(req, res) {
     try {
-      const checkAdmin = jwtDecode(req.headers.authorization);
+      const checkAdmin = jwt.decode(req.headers.authorization.split(" ")[1]);
       if (checkAdmin.role !== "admin")
         return super.response(res, 401, "invalid token");
       const { id } = req.params;
@@ -72,7 +72,7 @@ class RoleAction extends Client {
     try {
       const { page, limit } = req.query;
       const size = (parseInt(page) - 1) * parseInt(limit);
-      const checkAdmin = jwtDecode(req.headers.authorization);
+      const checkAdmin = jwt.decode(req.headers.authorization.split(" ")[1]);
       if (checkAdmin.role !== "admin")
         return super.response(res, 401, "invalid token");
       const { count, rows } = await role.findAndCountAll({

@@ -1,11 +1,11 @@
-const { default: jwtDecode } = require("jwt-decode");
 const tentang = require("../../models").tentang;
 const Client = require("./client");
+const jwt = require("jsonwebtoken")
 
 class Tentang extends Client {
   async create(req, res) {
     try {
-      const checkAdmin = jwtDecode(req.headers.authorization);
+      const checkAdmin = jwt.decode(req.headers.authorization.split(" ")[1]);
       if (checkAdmin.role !== "admin")
         return super.response(res, 401, "invalid token");
       const body = req.body;
@@ -18,7 +18,7 @@ class Tentang extends Client {
   }
   async edit(req, res) {
     try {
-      const checkAdmin = jwtDecode(req.headers.authorization);
+      const checkAdmin = jwt.decode(req.headers.authorization.split(" ")[1]);
       if (checkAdmin.role !== "admin")
         return super.response(res, 401, "invalid token");
       const data = await tentang.findByPk(1);

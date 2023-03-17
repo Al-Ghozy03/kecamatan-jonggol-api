@@ -1,5 +1,4 @@
-const { default: jwtDecode } = require("jwt-decode");
-const { Op } = require("sequelize");
+const jwt = require("jsonwebtoken")
 const umkm = require("../../models").umkm;
 const desa = require("../../models").desa;
 const penduduk = require("../../models").penduduk;
@@ -8,7 +7,7 @@ const Client = require("./client");
 class Umkm extends Client {
   async create(req, res) {
     try {
-      const checkAdmin = jwtDecode(req.headers.authorization);
+      const checkAdmin = jwt.decode(req.headers.authorization.split(" ")[1]);
       if (checkAdmin.role !== "admin")
         return super.response(res, 401, "invalid token");
       const body = req.body;
@@ -23,7 +22,7 @@ class Umkm extends Client {
   }
   async edit(req, res) {
     try {
-      const checkAdmin = jwtDecode(req.headers.authorization);
+      const checkAdmin = jwt.decode(req.headers.authorization.split(" ")[1]);
       if (checkAdmin.role !== "admin")
         return super.response(res, 401, "invalid token");
       const { id } = req.params;
@@ -42,7 +41,7 @@ class Umkm extends Client {
   }
   async delete(req, res) {
     try {
-      const checkAdmin = jwtDecode(req.headers.authorization);
+      const checkAdmin = jwt.decode(req.headers.authorization.split(" ")[1]);
       if (checkAdmin.role !== "admin")
         return super.response(res, 401, "invalid token");
       const { id } = req.params;
@@ -60,7 +59,7 @@ class Umkm extends Client {
       const { page, limit, id_desa, jenis_produk } = req.query;
       const size = (parseInt(page) - 1) * parseInt(limit);
 
-      const checkAdmin = jwtDecode(req.headers.authorization);
+      const checkAdmin = jwt.decode(req.headers.authorization.split(" ")[1]);
       if (checkAdmin.role !== "admin")
         return super.response(res, 401, "invalid token");
       const { count, rows } = await umkm.findAndCountAll({

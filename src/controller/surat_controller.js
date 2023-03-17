@@ -1,15 +1,15 @@
-const { default: jwtDecode } = require("jwt-decode");
 const layanan = require("../../models").layanan;
 const penduduk = require("../../models").penduduk;
 const surat = require("../../models").surat;
 const desa = require("../../models").desa;
 const Client = require("./client");
+const jwt = require("jsonwebtoken")
 const crypto = require("crypto");
 
 class Surat extends Client {
   async create(req, res) {
     try {
-      const checkRole = jwtDecode(req.headers.authorization).role;
+      const checkRole = jwt.decode(req.headers.authorization.split(" ")[1]).role;
       if (checkRole !== "penduduk")
         return super.response(res, 401, "invalid token");
       const date = new Date();
@@ -29,7 +29,7 @@ class Surat extends Client {
       ];
       const body = req.body;
       const checkPenduduk = await penduduk.findByPk(
-        jwtDecode(req.headers.authorization).id
+        jwt.decode(req.headers.authorization.split(" ")[1]).id
       );
       const checkLayanan = await layanan.findByPk(body.id_layanan);
       if (!checkPenduduk)
@@ -39,7 +39,7 @@ class Surat extends Client {
       const checkDesa = await desa.findByPk(body.id_desa);
       if (!checkDesa) return super.response(res, 404, "desa tidak ditemukan");
       body.id_desa = checkDesa.id;
-      body.id_penduduk = jwtDecode(req.headers.authorization).id;
+      body.id_penduduk = jwt.decode(req.headers.authorization.split(" ")[1]).id;
       body.bulan = month[date.getMonth()];
       body.tahun = date.getFullYear();
       body.nomor_surat = crypto.randomInt(0, 100000);
@@ -115,7 +115,7 @@ class Surat extends Client {
   }
   async edit(req, res) {
     try {
-      const checkAdmin = jwtDecode(req.headers.authorization);
+      const checkAdmin = jwt.decode(req.headers.authorization.split(" ")[1]);
       if (checkAdmin.role !== "admin")
         return super.response(res, 401, "invalid token");
       const { id } = req.params;
@@ -134,7 +134,7 @@ class Surat extends Client {
   }
   async delete(req, res) {
     try {
-      const checkAdmin = jwtDecode(req.headers.authorization);
+      const checkAdmin = jwt.decode(req.headers.authorization.split(" ")[1]);
       if (checkAdmin.role !== "admin")
         return super.response(res, 401, "invalid token");
       const { id } = req.params;

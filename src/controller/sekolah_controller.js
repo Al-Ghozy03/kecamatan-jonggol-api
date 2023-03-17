@@ -1,14 +1,14 @@
-const { default: jwtDecode } = require("jwt-decode");
 const { Op } = require("sequelize");
 const sekolah = require("../../models").sekolah;
 const desa = require("../../models").desa;
 const Client = require("./client");
 const convert = require("./convert");
+const jwt = require("jsonwebtoken")
 
 class Sekolah extends Client {
   async create(req, res) {
     try {
-      const checkAdmin = jwtDecode(req.headers.authorization);
+      const checkAdmin = jwt.decode(req.headers.authorization.split(" ")[1]);
       if (checkAdmin.role !== "admin")
         return super.response(res, 401, "invalid token");
       const body = req.body;
@@ -24,7 +24,7 @@ class Sekolah extends Client {
   }
   async edit(req, res) {
     try {
-      const checkAdmin = jwtDecode(req.headers.authorization);
+      const checkAdmin = jwt.decode(req.headers.authorization.split(" ")[1]);
       if (checkAdmin.role !== "admin")
         return super.response(res, 401, "invalid token");
       const { slug } = req.params;
@@ -46,7 +46,7 @@ class Sekolah extends Client {
   }
   async delete(req, res) {
     try {
-      const checkAdmin = jwtDecode(req.headers.authorization);
+      const checkAdmin = jwt.decode(req.headers.authorization.split(" ")[1]);
       if (checkAdmin.role !== "admin")
         return super.response(res, 401, "invalid token");
       const { slug } = req.params;

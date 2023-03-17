@@ -1,4 +1,3 @@
-const { default: jwtDecode } = require("jwt-decode");
 const { Op } = require("sequelize");
 const potensi_desa = require("../../models").potensi_desa;
 const desa = require("../../models").desa;
@@ -6,12 +5,13 @@ const penduduk = require("../../models").penduduk;
 const Client = require("./client");
 const cloudinary_controller = require("./cloudinary_controller");
 const convert = require("./convert");
+const jwt = require("jsonwebtoken")
 
 class PotensiDesa extends Client {
   async create(req, res) {
     try {
       const body = req.body;
-      const checkAdmin = jwtDecode(req.headers.authorization);
+      const checkAdmin = jwt.decode(req.headers.authorization.split(" ")[1]);
       if (checkAdmin.role !== "penduduk")
         return super.response(res, 401, "invalid token");
       if (
@@ -25,7 +25,7 @@ class PotensiDesa extends Client {
         );
         const checkDesa = await desa.findByPk(body.id_desa);
         if (!checkDesa) return super.response(res, 404, "desa tidak ditemukan");
-        body.id_penduduk = jwtDecode(req.headers.authorization).id;
+        body.id_penduduk = jwt.decode(req.headers.authorization.split(" ")[1]).id;
         body.thumbnail = secure_url;
         body.id_thumbnail = public_id;
         body.slug = convert.toSlug(body.nama_potensi);
@@ -45,7 +45,7 @@ class PotensiDesa extends Client {
   async delete(req, res) {
     try {
       const { slug } = req.params;
-      const checkAdmin = jwtDecode(req.headers.authorization);
+      const checkAdmin = jwt.decode(req.headers.authorization.split(" ")[1]);
       if (checkAdmin.role !== "admin")
         return super.response(res, 401, "invalid token");
       const check = await potensi_desa.findOne({ where: { slug } });
@@ -61,7 +61,7 @@ class PotensiDesa extends Client {
     try {
       const { slug } = req.params;
       const body = req.body;
-      const checkAdmin = jwtDecode(req.headers.authorization);
+      const checkAdmin = jwt.decode(req.headers.authorization.split(" ")[1]);
       if (checkAdmin.role !== "admin")
         return super.response(res, 401, "invalid token");
       const check = await potensi_desa.findOne({ where: { slug } });

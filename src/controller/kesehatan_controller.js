@@ -1,16 +1,16 @@
-const { default: jwtDecode } = require("jwt-decode");
 const { Op } = require("sequelize");
 const kesehatan = require("../../models").kesehatan;
 const desa = require("../../models").desa;
 const Client = require("./client");
 const cloudinary_controller = require("./cloudinary_controller");
 const convert = require("./convert");
+const jwt = require("jsonwebtoken")
 
 class Desa extends Client {
   async create(req, res) {
     try {
       const body = req.body;
-      const checkAdmin = jwtDecode(req.headers.authorization);
+      const checkAdmin = jwt.decode(req.headers.authorization.split(" ")[1]);
       if (checkAdmin.role !== "admin")
         return super.response(res, 401, "invalid token");
       const checkDesa = await desa.findByPk(body.id_desa);
@@ -43,7 +43,7 @@ class Desa extends Client {
   async delete(req, res) {
     try {
       const { slug } = req.params;
-      const checkAdmin = jwtDecode(req.headers.authorization);
+      const checkAdmin = jwt.decode(req.headers.authorization.split(" ")[1]);
       if (checkAdmin.role !== "admin")
         return super.response(res, 401, "invalid token");
       const check = await kesehatan.findOne({ where: { slug } });
@@ -59,7 +59,7 @@ class Desa extends Client {
     try {
       const { slug } = req.params;
       const body = req.body;
-      const checkAdmin = jwtDecode(req.headers.authorization);
+      const checkAdmin = jwt.decode(req.headers.authorization.split(" ")[1]);
       if (checkAdmin.role !== "admin")
         return super.response(res, 401, "invalid token");
       const check = await kesehatan.findOne({ where: { slug } });

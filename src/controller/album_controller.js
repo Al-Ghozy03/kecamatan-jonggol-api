@@ -1,4 +1,4 @@
-const { default: jwtDecode } = require("jwt-decode");
+const jwt = require("jsonwebtoken")
 const album = require("../../models").album;
 const galeri = require("../../models").galeri;
 const Client = require("./client");
@@ -7,7 +7,7 @@ const convert = require("./convert");
 class Album extends Client {
   async create(req, res) {
     try {
-      const checkAdmin = jwtDecode(req.headers.authorization);
+      const checkAdmin = jwt.decode(req.headers.authorization.split(" ")[1]);
       if (checkAdmin.role !== "admin")
         return super.response(res, 401, "invalid token");
       const body = req.body;
@@ -21,7 +21,7 @@ class Album extends Client {
   }
   async edit(req, res) {
     try {
-      const checkAdmin = jwtDecode(req.headers.authorization);
+      const checkAdmin = jwt.decode(req.headers.authorization.split(" ")[1]);
       if (checkAdmin.role !== "admin")
         return super.response(res, 401, "invalid token");
       const { slug } = req.params;
@@ -40,7 +40,7 @@ class Album extends Client {
   }
   async delete(req, res) {
     try {
-      const checkAdmin = jwtDecode(req.headers.authorization);
+      const checkAdmin = jwt.decode(req.headers.authorization.split(" ")[1]);
       if (checkAdmin.role !== "admin")
         return super.response(res, 401, "invalid token");
       const { slug } = req.params;

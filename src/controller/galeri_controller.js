@@ -1,15 +1,15 @@
-const { default: jwtDecode } = require("jwt-decode");
 const galeri = require("../../models").galeri;
 const album = require("../../models").album;
 const Client = require("./client");
 const cloudinary_controller = require("./cloudinary_controller");
 const convert = require("./convert");
+const jwt = require("jsonwebtoken")
 
 class Galeri extends Client {
   async create(req, res) {
     try {
       const body = req.body;
-      const checkAdmin = jwtDecode(req.headers.authorization);
+      const checkAdmin = jwt.decode(req.headers.authorization.split(" ")[1]);
       if (checkAdmin.role !== "admin")
         return super.response(res, 401, "invalid token");
       const checkAlbum = await album.findByPk(body.id_album);
@@ -42,7 +42,7 @@ class Galeri extends Client {
   async delete(req, res) {
     try {
       const { slug } = req.params;
-      const checkAdmin = jwtDecode(req.headers.authorization);
+      const checkAdmin = jwt.decode(req.headers.authorization.split(" ")[1]);
       if (checkAdmin.role !== "admin")
         return super.response(res, 401, "invalid token");
       const check = await galeri.findOne({ where: { slug } });
@@ -58,7 +58,7 @@ class Galeri extends Client {
     try {
       const { slug } = req.params;
       const body = req.body;
-      const checkAdmin = jwtDecode(req.headers.authorization);
+      const checkAdmin = jwt.decode(req.headers.authorization.split(" ")[1]);
       if (checkAdmin.role !== "admin")
         return super.response(res, 401, "invalid token");
       const check = await galeri.findOne({ where: { slug } });

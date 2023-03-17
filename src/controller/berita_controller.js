@@ -1,4 +1,4 @@
-const { default: jwtDecode } = require("jwt-decode");
+const jwt = require("jsonwebtoken")
 const { Op } = require("sequelize");
 const berita = require("../../models").berita;
 const admin = require("../../models").admin;
@@ -10,7 +10,7 @@ class Berita extends Client {
   async create(req, res) {
     try {
       const body = req.body;
-      const checkAdmin = jwtDecode(req.headers.authorization);
+      const checkAdmin = jwt.decode(req.headers.authorization.split(" ")[1]);
       if (checkAdmin.role !== "admin")
         return super.response(res, 401, "invalid token");
       if (
@@ -22,7 +22,7 @@ class Berita extends Client {
           req.file.path,
           "berita"
         );
-        body.id_admin = jwtDecode(req.headers.authorization).id;
+        body.id_admin = jwt.decode(req.headers.authorization.split(" ")[1]).id;
         body.thumbnail = secure_url;
         body.id_thumbnail = public_id;
         body.slug = convert.toSlug(body.judul);
@@ -42,7 +42,7 @@ class Berita extends Client {
   async delete(req, res) {
     try {
       const { slug } = req.params;
-      const checkAdmin = jwtDecode(req.headers.authorization);
+      const checkAdmin = jwt.decode(req.headers.authorization.split(" ")[1]);
       if (checkAdmin.role !== "admin")
         return super.response(res, 401, "invalid token");
       const check = await berita.findOne({ where: { slug } });
@@ -58,7 +58,7 @@ class Berita extends Client {
     try {
       const { slug } = req.params;
       const body = req.body;
-      const checkAdmin = jwtDecode(req.headers.authorization);
+      const checkAdmin = jwt.decode(req.headers.authorization.split(" ")[1]);
       if (checkAdmin.role !== "admin")
         return super.response(res, 401, "invalid token");
       const check = await berita.findOne({ where: { slug } });

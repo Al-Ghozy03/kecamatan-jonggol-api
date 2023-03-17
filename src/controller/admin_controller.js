@@ -6,7 +6,6 @@ const roleaction = require("../../models").role_action;
 const Client = require("./client");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
-const { default: jwtDecode } = require("jwt-decode");
 const { Op } = require("sequelize");
 require("dotenv").config();
 
@@ -81,7 +80,7 @@ class Admin extends Client {
     try {
       const { page, limit, key } = req.query;
       const size = (parseInt(page) - 1) * parseInt(limit);
-      const checkAdmin = jwtDecode(req.headers.authorization);
+      const checkAdmin = jwt.decode(req.headers.authorization.split(" ")[1]);
       if (checkAdmin.role !== "admin")
         return super.response(res, 401, "invalid token");
       const { count, rows } = await admin.findAndCountAll({
