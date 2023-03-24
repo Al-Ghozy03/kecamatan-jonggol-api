@@ -85,7 +85,7 @@ class Layanan extends Client {
       const { page, limit, key } = req.query;
       const size = (parseInt(page) - 1) * parseInt(limit);
       const { rows, count } = await layanan.findAndCountAll({
-        attributes: ["slug", "nama", "syarat", "template"],
+        attributes: ["id","slug", "nama", "syarat", "template"],
         ...(page !== undefined &&
           limit !== undefined && {
             offset: size,
@@ -117,7 +117,7 @@ class Layanan extends Client {
       const { slug } = req.params;
       const data = await layanan.findOne({
         where: { slug },
-        attributes: ["slug", "nama", "syarat", "template"],
+        attributes: ["id", "slug", "nama", "syarat", "template"],
       });
       if (!data) return super.response(res, 404, "data tidak ditemukan");
       return super.response(res, 200, null, {
