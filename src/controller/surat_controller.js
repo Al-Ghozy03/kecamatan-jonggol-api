@@ -89,7 +89,7 @@ class Surat extends Client {
           },
           {
             model: layanan,
-            attributes: ["nama", "syarat"],
+            attributes: ["nama", "syarat","template"],
           },
         ],
       });
