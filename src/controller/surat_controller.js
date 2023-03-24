@@ -104,7 +104,7 @@ class Surat extends Client {
           layanan: {
             nama: e.dataValues.layanan.nama,
             syarat: JSON.parse(e.dataValues.layanan.syarat),
-            syarat:e.dataValues.layanan.template,
+            template:e.dataValues.layanan.template,
           },
         })),
         count,
