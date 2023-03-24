@@ -3,13 +3,15 @@ const penduduk = require("../../models").penduduk;
 const surat = require("../../models").surat;
 const desa = require("../../models").desa;
 const Client = require("./client");
-const jwt = require("jsonwebtoken")
+const jwt = require("jsonwebtoken");
 const crypto = require("crypto");
 
 class Surat extends Client {
   async create(req, res) {
     try {
-      const checkRole = jwt.decode(req.headers.authorization.split(" ")[1]).role;
+      const checkRole = jwt.decode(
+        req.headers.authorization.split(" ")[1]
+      ).role;
       if (checkRole !== "penduduk")
         return super.response(res, 401, "invalid token");
       const date = new Date();
@@ -89,7 +91,7 @@ class Surat extends Client {
           },
           {
             model: layanan,
-            attributes: ["nama", "syarat","template"],
+            attributes: ["nama", "syarat", "template"],
           },
         ],
       });
@@ -102,6 +104,7 @@ class Surat extends Client {
           layanan: {
             nama: e.dataValues.layanan.nama,
             syarat: JSON.parse(e.dataValues.layanan.syarat),
+            syarat:e.dataValues.layanan.template,
           },
         })),
         count,
@@ -147,13 +150,13 @@ class Surat extends Client {
       return super.response(res, 500, er);
     }
   }
-  async total(req,res){
+  async total(req, res) {
     try {
-      const {count} = await surat.findAndCountAll()
-      return super.response(res,200,null,count)
+      const { count } = await surat.findAndCountAll();
+      return super.response(res, 200, null, count);
     } catch (er) {
       console.log(er);
-      return super.response(res,500,er)
+      return super.response(res, 500, er);
     }
   }
 }
