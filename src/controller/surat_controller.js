@@ -66,7 +66,7 @@ class Surat extends Client {
       } = req.query;
       const size = (parseInt(page) - 1) * parseInt(limit);
       const { count, rows } = await surat.findAndCountAll({
-        attributes: ["nomor_surat", "bulan", "tahun", "status", "createdAt"],
+        attributes: ["id","nomor_surat", "bulan", "tahun", "status", "createdAt"],
         ...(page !== undefined &&
           limit !== undefined && {
             limit: parseInt(limit),
