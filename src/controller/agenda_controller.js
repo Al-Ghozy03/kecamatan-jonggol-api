@@ -128,7 +128,7 @@ class Agenda extends Client {
         }),
         include: {
           model: desa,
-          attributes: ["nama_desa", "kepala_desa", "latitude", "longtitude"],
+          attributes: ["id","nama_desa", "kepala_desa", "latitude", "longtitude"],
         },
       });
       return super.responseWithPagination(
@@ -163,7 +163,7 @@ class Agenda extends Client {
         ],
         include: {
           model: desa,
-          attributes: ["nama_desa", "kepala_desa", "latitude", "longtitude"],
+          attributes: ["id","nama_desa", "kepala_desa", "latitude", "longtitude"],
         },
       });
       if (!data) return super.response(res, 404, "data tidak ditemukan");
