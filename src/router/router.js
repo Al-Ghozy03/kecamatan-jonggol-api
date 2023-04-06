@@ -22,6 +22,7 @@ const { agenda_router } = require("./agenda_router");
 const { kesehatan_router } = require("./kesehatan_router");
 const { traffic_router } = require("./traffic_router");
 const { kontak_router } = require("./kontak_router");
+const { slider_router } = require("./slider_router");
 const router = require("express")();
 
 router.use("/auth", auth_router);
@@ -48,6 +49,7 @@ router.use("/agenda", agenda_router);
 router.use("/kesehatan", kesehatan_router);
 router.use("/traffic", traffic_router);
 router.use("/kontak", kontak_router);
+router.use("/slider", slider_router);
 router.get("/", (req, res) => res.json({ code: 200, message: "welcome" }));
 router.all("*", (req, res) =>
   res.status(404).json({ code: 404, message: "route not found" })
