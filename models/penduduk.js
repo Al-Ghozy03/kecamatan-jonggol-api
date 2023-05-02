@@ -63,6 +63,7 @@ module.exports = (sequelize, DataTypes) => {
       alamat_sekarang: DataTypes.STRING,
       id_desa: DataTypes.INTEGER,
       slug: DataTypes.STRING,
+      token: DataTypes.STRING,
     },
     {
       sequelize,
