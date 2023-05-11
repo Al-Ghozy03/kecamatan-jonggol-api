@@ -3,7 +3,7 @@ const sekolah = require("../../models").sekolah;
 const desa = require("../../models").desa;
 const Client = require("./client");
 const convert = require("./convert");
-const jwt = require("jsonwebtoken")
+const jwt = require("jsonwebtoken");
 
 class Sekolah extends Client {
   async create(req, res) {
@@ -88,7 +88,13 @@ class Sekolah extends Client {
           }),
         include: {
           model: desa,
-          attributes: ["nama_desa", "kepala_desa", "longtitude", "latitude"],
+          attributes: [
+            "id",
+            "nama_desa",
+            "kepala_desa",
+            "longtitude",
+            "latitude",
+          ],
         },
       });
       return super.responseWithPagination(
@@ -100,6 +106,37 @@ class Sekolah extends Client {
         Math.ceil(count / parseInt(limit)),
         parseInt(parseInt(page))
       );
+    } catch (er) {
+      console.log(er);
+      return super.responseWithPagination(res, 500, er);
+    }
+  }
+  async detail(req, res) {
+    try {
+      const { slug } = req.params;
+      const data = await sekolah.findOne({
+        attributes: [
+          "slug",
+          "nama_sekolah",
+          "npsn",
+          "bentuk_pendidikan",
+          "status",
+          "alamat",
+        ],
+        where: { slug },
+        include: {
+          model: desa,
+          attributes: [
+            "id",
+            "nama_desa",
+            "kepala_desa",
+            "longtitude",
+            "latitude",
+          ],
+        },
+      });
+      if (!data) return super.response(res, 404, "data tidak ditemukan");
+      return super.response(res, 200, null, data);
     } catch (er) {
       console.log(er);
       return super.responseWithPagination(res, 500, er);
