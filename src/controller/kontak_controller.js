@@ -2,7 +2,6 @@ const Client = require("./client");
 const convert = require("./convert");
 const kontak = require("../../models").kontak;
 const jwt = require("jsonwebtoken")
-
 class Kontak extends Client {
   async create(req, res) {
     try {
